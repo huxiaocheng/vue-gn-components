@@ -1,17 +1,19 @@
 <template>
-  <div class="wrap" ref="wrap">
-    <div
-      class="small-wrap"
-      ref="small"
-      @mouseleave="onMouseleave"
-      @mousemove="onMousemove"
-      @mouseenter="onMouseenter"
-    >
-      <div class="mask-wrap" ref="mask" v-show="enterShow"></div>
-      <img :src="minImgUrl" :width="boxSize" :height="boxSize" />
-    </div>
-    <div class="max-wrap" ref="maxBox" v-show="enterShow">
-      <img :src="maxImgUrl" class="img" ref="img" @load="setMaskSize" />
+  <div>
+    <div class="wrap" ref="wrap">
+      <div
+        class="small-wrap"
+        ref="small"
+        @mouseleave="onMouseleave"
+        @mousemove="onMousemove"
+        @mouseenter="onMouseenter"
+      >
+        <div class="mask-wrap" ref="mask" v-show="isShow"></div>
+        <img :src="minImgUrl" :width="boxSize" :height="boxSize" />
+      </div>
+      <div class="max-wrap" ref="maxBox" v-show="isShow">
+        <img :src="maxImgUrl" class="img" ref="img" @load="setMaskSize" />
+      </div>
     </div>
   </div>
 </template>
@@ -25,49 +27,35 @@ export default {
     },
     minImgUrl: {
       type: String,
-      default: "./img/min.jpg"
+      default: ""
     },
     maxImgUrl: {
       type: String,
-      default: "./img/max.jpg"
+      default: ""
+    },
+    autoReverse: {
+      type: Boolean,
+      default: true
+    },
+    direction: {
+      type: String,
+      default: "right"
     }
   },
   data() {
     return {
-      enterShow: false
+      isShow: false
     };
   },
   mounted() {
-    this.parentLeftPosition = 0;
-    this.parentTopPosition = 0;
-    setTimeout(() => {
-      this.getParentAndComputed();
-    }, 20);
+    this.initDom();
   },
   methods: {
-    getParentAndComputed() {
-      let box = this.$refs["small"];
-      const parents = [];
-      while (box !== document) {
-        parents.push(box);
-        box = box.parentNode;
-      }
-      parents.forEach(el => {
-        this.parentLeftPosition +=
-          this.getDomAttr(el, "padding-left") +
-          this.getDomAttr(el, "margin-left") +
-          el.clientLeft;
-        this.parentTopPosition +=
-          this.getDomAttr(el, "padding-top") +
-          this.getDomAttr(el, "margin-top") +
-          el.clientTop;
-      });
-      this.initDom();
-    },
     setMaskSize() {
+      // 设置遮罩层大小
       const mask = this.$refs["mask"];
       const maxImgWidth = this.$refs["img"].width;
-      const minBoxWidth = this.getDomAttr(this.$refs["small"], "width");
+      const minBoxWidth = this.smallWidth;
       mask.style.width = (minBoxWidth / maxImgWidth) * minBoxWidth + "px";
       mask.style.height = (minBoxWidth / maxImgWidth) * minBoxWidth + "px";
     },
@@ -87,55 +75,89 @@ export default {
       return parseInt(getComputedStyle(el)[attr].slice(0, -2));
     },
     onMouseenter() {
-      this.enterShow = true;
+      this.isShow = true;
     },
     onMouseleave() {
-      this.enterShow = false;
+      this.isShow = false;
     },
     onMousemove(e) {
-      let left =
-        e.clientX +
-        window.scrollX -
-        this.parentLeftPosition -
-        this.mask.offsetWidth / 2;
-      let top =
-        e.clientY +
-        window.scrollY -
-        this.parentTopPosition -
-        this.mask.offsetHeight / 2;
+      const leftPosition = this.wrap.getBoundingClientRect().left;
+      const topPosition = this.wrap.getBoundingClientRect().top;
+      const paddingLeft = this.getDomAttr(this.wrap, "padding-left");
+      const padddingTop = this.getDomAttr(this.wrap, "padding-top");
 
-      this.maxBox.style.left =
-        this.parentLeftPosition +
-        window.scrollX +
-        this.small.clientWidth +
+      let left = e.clientX - leftPosition - this.mask.offsetWidth / 2;
+      let top = e.clientY - topPosition - this.mask.offsetHeight / 2;
+
+      const maxBoxRightPos =
+        leftPosition +
         this.maxBox.clientLeft +
-        "px";
+        this.small.clientLeft +
+        this.wrap.clientLeft +
+        paddingLeft +
+        this.small.clientWidth;
+
+      const maxBoxLeftPos =
+        leftPosition +
+        this.wrap.clientLeft +
+        paddingLeft -
+        this.small.clientLeft * 2 -
+        this.small.clientWidth;
+
+      let maxBoxPos = -1;
+
+      if (this.autoReverse) {
+        const isMaxBoxExceedWindow =
+          maxBoxRightPos + this.getDomAttr(this.maxBox, "width") >
+          window.innerWidth;
+        maxBoxPos = isMaxBoxExceedWindow ? maxBoxLeftPos : maxBoxRightPos;
+      } else {
+        if (this.direction === "right") {
+          maxBoxPos = maxBoxRightPos;
+        } else if (this.direction === "left") {
+          maxBoxPos = maxBoxLeftPos;
+        }
+      }
+      this.maxBox.style.left = maxBoxPos + "px";
 
       this.maxBox.style.top =
-        this.parentTopPosition - window.scrollY - this.small.clientTop + "px";
+        topPosition +
+        this.wrap.clientTop -
+        this.maxBox.clientTop +
+        padddingTop +
+        this.small.clientTop +
+        "px";
 
-      if (left < 0) {
-        left = 0;
-      } else if (left > this.small.offsetWidth - this.mask.offsetWidth) {
-        left = this.small.offsetWidth - this.mask.offsetWidth;
+      if (left < paddingLeft) {
+        left = paddingLeft;
+      } else if (
+        left >
+        this.small.offsetWidth - this.mask.offsetWidth + paddingLeft
+      ) {
+        left = this.small.offsetWidth - this.mask.offsetWidth + paddingLeft;
       }
-      if (top < 0) {
-        top = 0;
-      } else if (top > this.small.offsetHeight - this.mask.offsetHeight) {
-        top = this.small.offsetHeight - this.mask.offsetHeight;
-      }
-      this.mask.style.left =
-        left + this.getDomAttr(this.wrap, "margin-left") + "px";
-      this.mask.style.top =
-        top + this.getDomAttr(this.wrap, "margin-top") + "px";
 
-      const pX = left / (this.smallWidth - this.mask.offsetWidth);
-      const pY = top / (this.smallHeight - this.mask.offsetHeight);
+      if (top < padddingTop) {
+        top = padddingTop;
+      } else if (
+        top >
+        this.small.offsetHeight - this.mask.offsetHeight + padddingTop
+      ) {
+        top = this.small.offsetHeight - this.mask.offsetHeight + padddingTop;
+      }
+      
+      this.mask.style.left = left + "px";
+      this.mask.style.top = top + "px";
+
+      const pX =
+        (left - paddingLeft) / (this.smallWidth - this.mask.offsetWidth);
+      const pY =
+        (top - padddingTop) / (this.smallHeight - this.mask.offsetHeight);
 
       this.maxImg.style.left =
-        -pX * (this.maxImg.offsetWidth - this.maxBox.offsetWidth) + "px";
+        -pX * (this.maxImg.width - this.maxBox.offsetWidth) + "px";
       this.maxImg.style.top =
-        -pY * (this.maxImg.offsetHeight - this.maxBox.offsetHeight) + "px";
+        -pY * (this.maxImg.height - this.maxBox.offsetHeight) + "px";
     }
   }
 };
@@ -144,12 +166,14 @@ export default {
 <style lang="stylus" scoped>
 .wrap {
   position: relative;
+  box-sizing: border-box;
 
   .small-wrap {
     display: inline-block;
     opacity: move;
     z-index: 1;
     border: 1px solid #ccc;
+    box-sizing: border-box;
 
     .mask-wrap {
       position: absolute;
