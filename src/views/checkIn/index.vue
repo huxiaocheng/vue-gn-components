@@ -5,7 +5,7 @@
       <button style="margin-left: 10px" @click="onCheckIn(1)">测试签到下一天</button>
       <button style="margin-left: 10px" @click="onCheckIn(3)">测试签到三天后</button>
     </div>
-    <CheckIn :checkIns="checkIns"/>
+    <CheckIn :checkIns="checkIns" :size='300'/>
   </div>
 </template>
 

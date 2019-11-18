@@ -160,14 +160,16 @@ export default {
               : this.dateInfo.month
           ] || []
         : [];
+
       if (!currentDate.length) {
         return;
       }
+
       const { detailInfo } = this.dateInfo;
-      for (let i = 0, len = detailInfo.length; i < len; i++) {
-        const info = detailInfo[i];
-        for (let j = 0, l = currentDate.length; j < l; j++) {
-          if (info.dateStr === currentDate[j]) {
+      for (let i = 0, l = currentDate.length; i < l; i++) {
+        for (let j = 0, len = detailInfo.length; j < len; j++) {
+          const info = detailInfo[j];
+          if (info.dateStr === currentDate[i]) {
             info["isCheckIn"] = true;
           }
         }
