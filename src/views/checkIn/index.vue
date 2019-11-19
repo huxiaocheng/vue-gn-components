@@ -4,8 +4,9 @@
       <button style="margin-left: 10px" @click="onCheckIn(0)">立即签到今天</button>
       <button style="margin-left: 10px" @click="onCheckIn(1)">测试签到下一天</button>
       <button style="margin-left: 10px" @click="onCheckIn(3)">测试签到三天后</button>
+      <router-link to="/home" style="margin-left: 10px" tag="button">去首页</router-link>
     </div>
-    <CheckIn :checkIns="checkIns" :size='300'/>
+    <CheckIn :checkIns="checkIns" :size="300" />
   </div>
 </template>
 
