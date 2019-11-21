@@ -20,6 +20,12 @@
         @blur="handleDivBlur($event, index)"
         :style="{left: item.left + 'px', top: item.top + 'px'}"
       >{{item.text}}</div>
+      <i
+        class="close-label"
+        v-for="item in labels"
+        :key="item.text"
+        :style="{left: item.left - 5 + 'px', top: item.top - 8 + 'px'}"
+      >x</i>
     </div>
     <ul class="menu-list" v-show="isShowMenu" ref="menu" @click="hideMenu">
       <li
@@ -111,18 +117,18 @@ export default {
     handleDoubleClick(e) {
       e.target.setAttribute("contenteditable", true);
       e.target.focus();
-
-      // 全选
-      if (document.selection) {
-        let range = document.body.createTextRange();
-        range.moveToElementText(e.target);
-        range.select();
-      } else if (window.getSelection) {
-        const range = document.createRange();
-        range.selectNodeContents(e.target);
-        window.getSelection().removeAllRanges();
-        window.getSelection().addRange(range);
-      }
+      this.$nextTick(() => {
+        if (document.selection) {
+          let range = document.body.createTextRange();
+          range.moveToElementText(e.target);
+          range.select();
+        } else if (window.getSelection) {
+          const range = document.createRange();
+          range.selectNodeContents(e.target);
+          window.getSelection().removeAllRanges();
+          window.getSelection().addRange(range);
+        }
+      });
     },
     createdLabel() {
       this.labels.push({
@@ -207,9 +213,10 @@ export default {
       cursor: pointer;
       user-select: none;
       outline: none;
+      user-select: none;
 
       &::before, &::after {
-        content: '';
+        content: ' ';
         display: block;
         position: absolute;
         width: 0;
@@ -231,6 +238,25 @@ export default {
         border-top-color: transparent;
         bottom: 50%;
         right: 100%;
+      }
+    }
+
+    .close-label {
+      position: absolute;
+      color: #fff;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      font-size: 12px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.4);
+      font-style: normal;
+      text-align: center;
+      transition: 0.3s all;
+      cursor: pointer;
+
+      &:hover {
+        background: rgba(0, 0, 0, 0.8);
       }
     }
   }
