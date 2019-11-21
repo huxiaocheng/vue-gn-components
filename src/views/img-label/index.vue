@@ -1,6 +1,6 @@
 <template>
   <div>
-    <img-label style="margin: 50px;" :imgUrl="require('./components/img/timg.jpg')"></img-label>
+    <img-label style="margin: 50px;" :imgUrl="require('./components/img/timg.png')"></img-label>
     <ImgLabelOld></ImgLabelOld>
   </div>
 </template>

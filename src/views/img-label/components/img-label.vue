@@ -10,11 +10,14 @@
     />
     <div class="label"></div>
     <ul class="menu-list" v-show="isShowMenu" ref="menu">
-      <li class="menu-item" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">新建标签</li>
-      <li class="menu-item" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">保存标签</li>
-      <li class="menu-item" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">清除标签</li>
-      <li class="menu-item" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">隐藏标签</li>
-      <li class="menu-item" @mouseenter="onMouseEnter" @mouseleave="onMouseLeave">导出为图片</li>
+      <li
+        class="menu-item"
+        v-for="item in menus"
+        :key="item"
+        @mouseenter="onMouseEnter"
+        @mouseleave="onMouseLeave"
+        @click="onMenuClick(item)"
+      >{{ item }}</li>
     </ul>
   </div>
 </template>
@@ -35,6 +38,9 @@ export default {
       default: "#3b8bcc"
     }
   },
+  created() {
+    this.menus = ["新建标签", "保存标签", "清除标签", "隐藏标签", "导出为图片"];
+  },
   data() {
     return {
       isShowMenu: false
@@ -48,9 +54,35 @@ export default {
     }
   },
   methods: {
+    onMenuClick(item) {
+      switch (item) {
+        case "新建标签":
+          this.createdLabel();
+          break;
+        case "保存标签":
+          this.saveLabel();
+          break;
+        case "清除标签":
+          this.clearLabel();
+          break;
+        case "隐藏标签":
+          this.hideLabel();
+          break;
+        case "导出为图片":
+          this.exportImg();
+          break;
+        default:
+          "";
+      }
+    },
+    createdLabel() {},
+    saveLabel() {},
+    clearLabel() {},
+    hideLabel() {},
+    exportImg() {},
     handleContextmenu(e) {
       this.isShowMenu = true;
-      console.log(e);
+      console.log(e)
       // this.$refs['menu'].style.left =
     },
     onMouseEnter(e) {
@@ -69,6 +101,7 @@ export default {
 .wrap {
   display: inline-block;
   position: relative;
+  border: 1px solid #ccc;
 
   .img {
     display: block;

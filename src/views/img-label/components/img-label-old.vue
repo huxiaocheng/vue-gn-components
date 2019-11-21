@@ -9,7 +9,7 @@
       @dragover.prevent.stop
     >
       <img
-        src="./img/timg.jpg"
+        src="./img/timg.png"
         ref="img"
         class="img-content"
         :width="width"
@@ -254,6 +254,7 @@ export default {
   display: inline-block;
   padding: 0;
   margin: 0;
+  border: 1px solid #ccc;
 }
 .label-content .label {
   position: absolute;
