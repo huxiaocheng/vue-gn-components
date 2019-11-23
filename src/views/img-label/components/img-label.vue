@@ -1,10 +1,10 @@
 <template>
-  <div class="wrap">
+  <div class="wrap" ref="wrap">
     <img
       @dragover.prevent.stop
       ref="img"
       class="img"
-      :src="imgUrl"
+      :src="src"
       :width="imgWidth"
       :draggable="false"
       @click="handleVoidClick"
@@ -15,13 +15,13 @@
         v-for="(item, index) in labels"
         :key="item._id"
         class="label-item"
+        ref="label-item"
         :draggable="true"
         @contextmenu.prevent
         @dblclick="handleDoubleClick"
         @click="handleRemoveLabel(index)"
-        @drag="ondrag"
-        @dragend="ondragend"
-        @dragstart="ondragstart"
+        @dragend="ondragend($event, index)"
+        @dragstart="ondragstart($event,index)"
         :style="{left: item.left + 'px', top: item.top + 'px'}"
       >
         <span class="label-text" @click.stop @blur="handleDivBlur($event, index)">{{item.text}}</span>
@@ -43,11 +43,18 @@
 
 
 <script>
+import DomToImg from "dom-to-image";
 const LABEL_INIT_HEIGHT = 30;
+const TRIANGLE_HEIGHT = 5;
+const CLOSE_BTN_BORDER = 6;
 
 export default {
   props: {
-    imgUrl: {
+    isShowSaveBtn: {
+      type: Boolean,
+      default: true
+    },
+    src: {
       type: String,
       default: ""
     },
@@ -62,6 +69,8 @@ export default {
   },
   created() {
     this.pos = {};
+    this.dragstart = {};
+    !this.isShowSaveBtn && this.menus.splice(1, 1);
   },
   mounted() {
     this.$nextTick(() => {
@@ -74,7 +83,7 @@ export default {
       isHideLabels: true,
       menus: ["新建标签", "保存标签", "清除标签", "隐藏标签", "导出为图片"],
       isShowMenu: false,
-      labels: JSON.parse(localStorage.getItem("__labels__")) || []
+      labels: JSON.parse(localStorage.getItem(`__labels__`)) || []
     };
   },
   computed: {
@@ -85,14 +94,30 @@ export default {
     }
   },
   methods: {
-    ondrag() {
-      console.log("ondrag");
+    ondragend(e, index) {
+      const bouding = this.img.getBoundingClientRect();
+      const labelWidth = this.$refs["label-item"][index].clientWidth;
+      const labelHeight = this.$refs["label-item"][index].clientHeight;
+      this.labels[index].left = Math.max(
+        0,
+        Math.min(
+          e.clientX - bouding.left - this.dragstart.left,
+          bouding.width - labelWidth - CLOSE_BTN_BORDER
+        )
+      );
+      this.labels[index].top = Math.max(
+        0 + CLOSE_BTN_BORDER,
+        Math.min(
+          e.clientY - bouding.top - this.dragstart.top,
+          bouding.height - labelHeight - TRIANGLE_HEIGHT * 2
+        )
+      );
     },
-    ondragend() {
-      console.log("ondragend");
-    },
-    ondragstart() {
-      console.log("ondragstart");
+    ondragstart(e, index) {
+      const bouding = this.img.getBoundingClientRect();
+      this.dragstart["left"] =
+        e.clientX - bouding.left - this.labels[index].left;
+      this.dragstart["top"] = e.clientY - bouding.top - this.labels[index].top;
     },
     onMenuClick(item) {
       switch (item) {
@@ -125,6 +150,7 @@ export default {
     handleDivBlur(e, index) {
       e.target.innerHTML === "" && this.labels.splice(index, 1);
       e.target.setAttribute("contenteditable", false);
+      this.labels[index].text = e.target.innerHTML;
     },
     handleDoubleClick(e) {
       e.target.setAttribute("contenteditable", true);
@@ -151,10 +177,10 @@ export default {
       });
     },
     saveLabel() {
-      localStorage.setItem("__labels__", JSON.stringify(this.labels));
+      localStorage.setItem(`__labels__`, JSON.stringify(this.labels));
     },
     clearLabel() {
-      localStorage.removeItem("__labels__");
+      localStorage.removeItem(`__labels__`);
       this.labels = [];
     },
     hideLabel() {
@@ -162,7 +188,16 @@ export default {
       if (!this.labels.length) return;
       this.menus[3] = this.menus[3] === "显示标签" ? "隐藏标签" : "显示标签";
     },
-    exportImg() {},
+    exportImg() {
+      setTimeout(() => {
+        DomToImg.toJpeg(this.$refs["wrap"]).then(dataUrl => {
+          const link = document.createElement("a");
+          link.href = dataUrl;
+          link.download = this.getDate();
+          link.click();
+        });
+      });
+    },
     handleContextmenu(e) {
       const bouding = e.target.getBoundingClientRect();
       this.showMenu();
@@ -176,14 +211,11 @@ export default {
           this.img.offsetHeight - this.menu.offsetHeight
         );
         this.pos["left"] = left;
-        if (
-          e.clientY - bouding.top + LABEL_INIT_HEIGHT >
+        this.pos["top"] =
+          e.clientY - bouding.top + LABEL_INIT_HEIGHT + TRIANGLE_HEIGHT >
           this.img.offsetWidth
-        ) {
-          this.pos["top"] = e.clientY - bouding.top - LABEL_INIT_HEIGHT;
-        } else {
-          this.pos["top"] = e.clientY - bouding.top;
-        }
+            ? e.clientY - bouding.top - LABEL_INIT_HEIGHT - TRIANGLE_HEIGHT
+            : e.clientY - bouding.top;
 
         this.menu.style.top = top + "px";
         this.menu.style.left = left + "px";
@@ -202,6 +234,16 @@ export default {
     onMouseLeave(e) {
       e.target.style.backgroundColor = "#fff";
       e.target.style.color = "#000";
+    },
+    getDate() {
+      const date = new Date();
+      const year = date.getFullYear();
+      const month =
+        date.getMonth() + 1 < 10
+          ? `0${date.getMonth() + 1}`
+          : date.getMonth() + 1;
+      const date1 = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
+      return `图片-${year}-${month}-${date1}`;
     }
   }
 };
@@ -213,6 +255,9 @@ export default {
   display: inline-block;
   position: relative;
   border: 1px solid #ccc;
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #fff;
 
   .img {
     display: block;
@@ -242,6 +287,7 @@ export default {
         }
 
         &::before {
+          display: block;
           background: rgba(0, 0, 0, 1);
         }
       }
@@ -262,11 +308,11 @@ export default {
       }
 
       &::before {
+        display: none;
         position: absolute;
         right: -6px;
         top: -6px;
         content: 'x';
-        display: block;
         width: 16px;
         height: 16px;
         line-height: 12px;
@@ -275,25 +321,6 @@ export default {
         background: rgba(0, 0, 0, 0.6);
         border-radius: 50%;
         transition: 0.3s all;
-      }
-    }
-
-    .close-label {
-      position: absolute;
-      color: #fff;
-      display: inline-block;
-      width: 16px;
-      height: 16px;
-      font-size: 12px;
-      border-radius: 50%;
-      background: rgba(0, 0, 0, 0.4);
-      font-style: normal;
-      text-align: center;
-      transition: 0.3s all;
-      cursor: pointer;
-
-      &:hover {
-        background: rgba(0, 0, 0, 0.8);
       }
     }
   }

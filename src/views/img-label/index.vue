@@ -1,18 +1,18 @@
 <template>
   <div>
-    <img-label style="margin: 50px;" :imgUrl="require('./components/img/timg.png')"></img-label>
-    <ImgLabelOld></ImgLabelOld>
+    <router-link to="/home" tag="button">去首页</router-link>
+    <div style="margin: 50px; padding: 50px; border: 1px solid red;">
+      <img-label :width="500" :src="require('./components/img/timg.jpg')"></img-label>
+    </div>
   </div>
 </template>
 
 <script>
 import ImgLabel from "./components/img-label";
-import ImgLabelOld from "./components/img-label-old";
 
 export default {
   components: {
-    ImgLabel,
-    ImgLabelOld
+    ImgLabel
   }
 };
 </script>
