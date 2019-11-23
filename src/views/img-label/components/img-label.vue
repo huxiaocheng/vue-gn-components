@@ -1,7 +1,7 @@
 <template>
   <div class="wrap">
-    <!-- <div style="height: 2000px"></div> -->
     <img
+      @dragover.prevent.stop
       ref="img"
       class="img"
       :src="imgUrl"
@@ -15,17 +15,17 @@
         v-for="(item, index) in labels"
         :key="item._id"
         class="label-item"
+        :draggable="true"
         @contextmenu.prevent
         @dblclick="handleDoubleClick"
-        @blur="handleDivBlur($event, index)"
+        @click="handleRemoveLabel(index)"
+        @drag="ondrag"
+        @dragend="ondragend"
+        @dragstart="ondragstart"
         :style="{left: item.left + 'px', top: item.top + 'px'}"
-      >{{item.text}}</div>
-      <i
-        class="close-label"
-        v-for="item in labels"
-        :key="item.text"
-        :style="{left: item.left - 5 + 'px', top: item.top - 8 + 'px'}"
-      >x</i>
+      >
+        <span class="label-text" @click.stop @blur="handleDivBlur($event, index)">{{item.text}}</span>
+      </div>
     </div>
     <ul class="menu-list" v-show="isShowMenu" ref="menu" @click="hideMenu">
       <li
@@ -43,7 +43,7 @@
 
 
 <script>
-const LABEL_HEIGHT = 30;
+const LABEL_INIT_HEIGHT = 30;
 
 export default {
   props: {
@@ -85,6 +85,15 @@ export default {
     }
   },
   methods: {
+    ondrag() {
+      console.log("ondrag");
+    },
+    ondragend() {
+      console.log("ondragend");
+    },
+    ondragstart() {
+      console.log("ondragstart");
+    },
     onMenuClick(item) {
       switch (item) {
         case "新建标签":
@@ -106,6 +115,9 @@ export default {
         default:
           "";
       }
+    },
+    handleRemoveLabel(index) {
+      this.labels.splice(index, 1);
     },
     handleVoidClick() {
       this.hideMenu();
@@ -164,8 +176,11 @@ export default {
           this.img.offsetHeight - this.menu.offsetHeight
         );
         this.pos["left"] = left;
-        if (e.clientY - bouding.top + LABEL_HEIGHT > this.img.offsetWidth) {
-          this.pos["top"] = e.clientY - bouding.top - LABEL_HEIGHT;
+        if (
+          e.clientY - bouding.top + LABEL_INIT_HEIGHT >
+          this.img.offsetWidth
+        ) {
+          this.pos["top"] = e.clientY - bouding.top - LABEL_INIT_HEIGHT;
         } else {
           this.pos["top"] = e.clientY - bouding.top;
         }
@@ -206,38 +221,60 @@ export default {
   .label-list {
     .label-item {
       position: absolute;
-      padding: 7px 10px;
       background: RGBA(0, 0, 0, 0.35);
       color: #fff;
       border-radius: 5px;
       cursor: pointer;
       user-select: none;
-      outline: none;
-      user-select: none;
+      transition: 0.3s all;
 
-      &::before, &::after {
-        content: ' ';
-        display: block;
-        position: absolute;
-        width: 0;
-        height: 0px;
-        border-width: 3px;
-        border-style: solid;
-        color: RGBA(0, 0, 0, 0.35);
+      .label-text {
+        display: inline-block;
+        padding: 7px 10px;
+        outline: none;
+      }
+
+      &:hover {
+        background: RGBA(0, 0, 0, 0.5);
+
+        &::after {
+          border-color: RGBA(0, 0, 0, 0.5) RGBA(0, 0, 0, 0) RGBA(0, 0, 0, 0);
+        }
+
+        &::before {
+          background: rgba(0, 0, 0, 1);
+        }
       }
 
       &::after {
-        border-left-color: transparent;
-        border-bottom-color: transparent;
-        top: 50%;
-        right: 100%;
+        position: absolute;
+        bottom: -10px;
+        left: 50%;
+        transform: translate(-50%, 0);
+        content: ' ';
+        display: block;
+        width: 0;
+        height: 0;
+        transition: 0.3s all;
+        border-width: 5px;
+        border-style: solid;
+        border-color: RGBA(0, 0, 0, 0.35) RGBA(0, 0, 0, 0) RGBA(0, 0, 0, 0);
       }
 
       &::before {
-        border-left-color: transparent;
-        border-top-color: transparent;
-        bottom: 50%;
-        right: 100%;
+        position: absolute;
+        right: -6px;
+        top: -6px;
+        content: 'x';
+        display: block;
+        width: 16px;
+        height: 16px;
+        line-height: 12px;
+        font-size: 12px;
+        text-align: center;
+        background: rgba(0, 0, 0, 0.6);
+        border-radius: 50%;
+        transition: 0.3s all;
       }
     }
 
