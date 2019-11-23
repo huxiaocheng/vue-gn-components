@@ -4,6 +4,7 @@ import Magnifier from "../views/magnifier";
 import Home from "../views/home";
 import CheckIn from '../views/checkIn';
 import ImgLabel from '../views/img-label';
+import SlideCheck from '../views/slide-check';
 
 Vue.use(VueRouter);
 
@@ -27,6 +28,10 @@ const routes = [
   {
     path: "/ImgLabel",
     component: ImgLabel
+  },
+  {
+    path: '/slide-check',
+    component: SlideCheck
   }
 ];
 
