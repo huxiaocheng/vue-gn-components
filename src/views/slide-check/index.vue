@@ -13,26 +13,26 @@ export default {
       canvas.width = 800;
       canvas.height = 800;
       const ctx = canvas.getContext("2d");
-
-      ctx.lineWidth = 10;
-      ctx.strokeStyle = "#058";
-
-      this.drawStar(ctx, 150, 300, 400, 400);
+      this.drawRoundRect(ctx, 100, 100, 600, 500, 50);
     },
-    drawStar(ctx, r, R, x, y, rot = 0) {
-      ctx.beginPath();
-      for (let i = 0; i < 5; i++) {
-        ctx.lineTo(
-          Math.cos(((18 + i * 72 - rot) / 180) * Math.PI) * R + x,
-          -Math.sin(((18 + i * 72 - rot) / 180) * Math.PI) * R + y
-        );
-        ctx.lineTo(
-          Math.cos(((54 + i * 72 - rot) / 180) * Math.PI) * r + x,
-          -Math.sin(((54 + i * 72 - rot) / 180) * Math.PI) * r + y
-        );
-      }
-      ctx.closePath();
+    drawRoundRect(ctx, x, y, width, height, radius) {
+      ctx.save();
+      ctx.translate(x, y);
+      this.pathRoundRect(ctx, width, height, radius);
+      ctx.strokeStyle = "#000";
       ctx.stroke();
+      ctx.restore();
+    },
+    pathRoundRect(ctx, width, height, radius) {
+      ctx.beginPath();
+      ctx.arc(width - radius, height - radius, radius, 0, Math.PI / 2);
+      ctx.lineTo(radius, height);
+      ctx.arc(radius, height - radius, radius, Math.PI / 2, Math.PI);
+      ctx.lineTo(0, radius);
+      ctx.arc(radius, radius, radius, Math.PI, (Math.PI * 3) / 2);
+      ctx.lineTo(width - radius, 0);
+      ctx.arc(width - radius, radius, radius, (Math.PI * 3) / 2, Math.PI * 2);
+      ctx.closePath();
     }
   }
 };
