@@ -1,135 +1,78 @@
 <template>
-  <div>
-    <button class="login-inputorbuttom login-bottom" @click="visible = !visible">登录</button>
-    <el-popover ref="popover" trigger="manual" v-model="visible">
-      <div class="sliding-pictures">
-        <div class="vimg">
-          <canvas id="sliderBlock"></canvas>
-          <canvas id="codeImg"></canvas>
-        </div>
-        <div class="slider">
-          <div class="track" :class="{ pintuTrue: puzzle }">{{ tips }}</div>
-          <div class="button el-icon-s-grid" @mousedown.prevent="drag"></div>
-        </div>
-        <div class="operation">
-          <span title="关闭验证码" @click="visible = false" class="el-icon-circle-close"></span>
-          <span title="刷新验证码" @click="canvasInit" class="el-icon-refresh-left"></span>
-        </div>
-      </div>
-    </el-popover>
+  <div class="slider-check-wrap">
+    <canvas ref="bg" class="bg-canvas"></canvas>
+    <canvas ref="card" class="card-canvas"></canvas>
   </div>
 </template>
 
 <script>
 export default {
-  data() {
-    return {
-      tips: "拖动左边滑块完成上方拼图",
-      visible: true,
-      puzzle: false
-    };
-  },
-  created() {
-    this.slider = {};
-  },
-  watch: {
-    visible(e) {
-      if (e) {
-        this.canvasInit();
-        this.puzzle = false;
-      }
+  props: {
+    src: {
+      type: String,
+      default: ""
+    },
+    width: {
+      type: [String, Number],
+      default: 300
+    },
+    height: {
+      type: [String, Number],
+      default: 300
     }
   },
+  mounted() {
+    this.initCanvas();
+  },
   methods: {
-    canvasInit() {
-      const random = (min, max) => {
-        return Math.floor(Math.random() * (max - min + 1) + min);
-      };
-      //x: 254, y: 109
-      // let mx = random(127, 244),
-      //   bx = random(10, 128),
-      //   y = random(10, 99);
+    initCanvas() {
+      this.initWidth =
+        typeof this.width === "number" ? this.width : +this.width.slice(0, -2);
 
-      let mx = random(0, 1),
-        bx = random(0, 1),
-        y = random(0, 1);
+      this.initHeight =
+        typeof this.height === "number"
+          ? this.height
+          : +this.height.slice(0, -2);
 
-      this.slider = { mx, bx };
+      const bgInitX = this._random(this.initWidth / 2, this.initWidth);
+      const cardInitX = 0;
+      const initY = this._random(0, this.initHeight);
 
-      this.draw(mx, bx, y);
+      this.drawImage(bgInitX, cardInitX, initY);
     },
-    drag(e) {
-      let dom = e.target;
-      let slider = document.querySelector("#sliderBlock");
-      const downCoordinate = { x: e.x, y: e.y };
+    drawImage(bgInitX, cardInitX, initY) {
+      this.bg = this.$refs["bg"];
+      this.bgCtx = this.bg.getContext("2d");
+      this.bg.width = this.initWidth;
+      this.bg.height = this.initHeight;
 
-      let checkx = Number(this.slider.mx) - Number(this.slider.bx);
-      let x = 0;
-      const move = e => {
-        x = e.x - downCoordinate.x;
-        //y = moveEV.y - downCoordinate.y;
-        if (x >= 251 || x <= 0) return false;
-        dom.style.left = x + "px";
-        //dom.style.top = y + "px";
-        slider.style.left = x + "px";
+      this.card = this.$refs["card"];
+      this.cardCtx = this.card.getContext("2d");
+      this.card.width = this.initWidth;
+      this.card.height = this.initHeight;
+
+      this.img = new Image();
+      this.img.src = this.src;
+      this.img.onload = () => {
+        this.bgCtx.drawImage(this.img, 0, 0, this.initWidth, this.initHeight);
+        this.cardCtx.drawImage(this.img, 0, 0, this.bg.width, this.initHeight);
       };
 
-      const up = () => {
-        document.removeEventListener("mousemove", move);
-        document.removeEventListener("mouseup", up);
-        dom.style.left = "";
-
-        console.log(x, checkx);
-        let max = checkx - 5;
-        let min = checkx - 10;
-        //允许正负误差1
-        if ((max >= x && x >= min) || x === checkx) {
-          console.log("滑动解锁成功");
-          this.puzzle = true;
-          this.tips = "验证成功";
-          setTimeout(() => {
-            this.visible = false;
-          }, 500);
-        } else {
-          console.log("拼图位置不正确");
-          this.tips = "验证失败，请重试";
-          this.puzzle = false;
-          this.canvasInit();
-        }
+      const bgPos = {
+        x: bgInitX,
+        y: initY,
+        r: 10
       };
-
-      document.addEventListener("mousemove", move);
-      document.addEventListener("mouseup", up);
+      const cardPos = {
+        x: cardInitX,
+        y: initY,
+        r: 10
+      };
+      this.drawBlock(this.bgCtx, bgPos, "fill");
+      this.drawBlock(this.cardCtx, cardPos, "clip");
     },
-    draw(mx = 200, bx = 20, y = 50) {
-      let mainDom = document.querySelector("#codeImg");
-      let bg = mainDom.getContext("2d");
-      let width = mainDom.width;
-      let height = mainDom.height;
-
-      let blockDom = document.querySelector("#sliderBlock");
-      let block = blockDom.getContext("2d");
-      //重新赋值，让canvas进行重新绘制
-      blockDom.height = height;
-      mainDom.height = height;
-
-      let imgsrc = require("./img/timg.jpg");
-      let img = document.createElement("img");
-      img.style.objectFit = "scale-down";
-      img.src = imgsrc;
-      img.onload = function() {
-        bg.drawImage(img, 0, 0, width, height);
-        block.drawImage(img, 0, 0, width, height);
-      };
-
-      let mainxy = { x: mx, y: y, r: 9 };
-      let blockxy = { x: bx, y: y, r: 9 };
-      this.drawBlock(bg, mainxy, "fill");
-      this.drawBlock(block, blockxy, "clip");
-    },
-    //绘制拼图
-    drawBlock(ctx, xy = { x: 254, y: 109, r: 9 }, type) {
-      let x = xy.x,
+    drawBlock(ctx, xy, type) {
+      const x = xy.x,
         y = xy.y,
         r = xy.r,
         w = 40;
@@ -150,169 +93,22 @@ export default {
       ctx.stroke();
       ctx[type]();
       ctx.globalCompositeOperation = "xor";
+    },
+    _random(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
     }
   }
 };
 </script>
-<style lang="stylus">
-.slidingPictures {
-  padding: 0;
-  width: 300px;
-  border-radius: 2px;
-}
-</style>
-<style scoped lang="stylus">
-#login {
-  display: flex;
-  flex-flow: row;
-  justify-content: flex-end;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  background-image: url('./img/timg.jpg');
-  background-size: 100% 100%;
 
-  .loginFrom {
-    width: 300px;
-    margin-top: -10vw;
-    margin-right: 10vw;
-
-    .login-item {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .login-title {
-      color: #ffffff;
-      font-size: 16px;
-      margin-bottom: 10px;
-    }
-
-    .login-bottom {
-      margin-top: 15px;
-    }
-
-    .login-bottom:hover {
-      background: rgba(28, 136, 188, 0.5);
-    }
-
-    .login-bottom:active {
-      background: rgba(228, 199, 200, 0.5);
-    }
-
-    /deep/.login-inputorbuttom {
-      height: 40px;
-      width: 300px;
-      background: rgba(57, 108, 158, 0.5);
-      border-radius: 20px;
-      border: #396c9e 1px solid;
-      font-size: 14px;
-      color: #ffffff;
-
-      .el-input--small, .el-input__inner {
-        line-height: 43px;
-        border: none;
-        color: #ffffff;
-        font-size: 14px;
-        height: 40px;
-        border-radius: 20px;
-        background: transparent;
-        text-align: center;
-      }
-
-      .el-input__icon {
-        line-height: 40px;
-        font-size: 16px;
-      }
-    }
-  }
-}
-
-/* 该样式最终是以弹窗插入 */
-.sliding-pictures {
-  width: 100%;
-
-  .vimg {
-    width: 100%;
-    height: 170px;
-
-    #codeImg, #sliderBlock {
-      padding: 7px 7px 0 7px;
-      width: inherit;
-      height: inherit;
-    }
-
-    #codeImg {
-      // display: none;
-    }
-
-    #sliderBlock {
-      position: absolute;
-      z-index: 4000;
-    }
+<style lang="stylus" scoped>
+.slider-check-wrap {
+  .bg-canvas {
   }
 
-  .slider {
-    width: 100%;
-    height: 65px;
-    border-bottom: #c7c9d0 1px solid;
-    display: flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    .track {
-      margin-left: 7px;
-      width: 286px;
-      height: 38px;
-      background: rgba(28, 136, 188, 0.5);
-      border-radius: 25px;
-      font-size: 14px;
-      line-height: 38px;
-      padding-right: 15px;
-      padding-left: 70px;
-    }
-
-    .pintuTrue {
-      background: #67c23a;
-      color: #ffffff;
-    }
-
-    .button {
-      position: absolute;
-      width: 50px;
-      height: 50px;
-      line-height: 48px;
-      background: #ffffff;
-      box-shadow: #b9bdc8 0 0 3px;
-      border-radius: 50%;
-      left: 7px;
-      text-align: center;
-      font-size: 28px;
-      color: #3e5d8b;
-
-      &:hover {
-        color: #2181bd;
-      }
-    }
-  }
-
-  .operation {
-    width: 100%;
-    height: 40px;
-
-    > span {
-      color: #9fa3ac;
-      display: inline-block;
-      width: 40px;
-      font-size: 25px;
-      line-height: 40px;
-      text-align: center;
-
-      &:hover {
-        background: #e2e8f5;
-      }
-    }
+  .card-canvas {
+    position: absolute;
+    left: 0;
   }
 }
 </style>
