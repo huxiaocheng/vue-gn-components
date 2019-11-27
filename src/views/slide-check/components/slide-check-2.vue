@@ -46,9 +46,10 @@ export default {
         return Math.floor(Math.random() * (max - min + 1) + min);
       };
 
-      let mx = random(0, 300),
-        bx = random(0, 300),
-        y = random(0, 100);
+      let mx = random(0, 300);
+      let bx = 0;
+      // let bx = random(0, 300);
+      let y = random(0, 100);
 
       this.slider = { mx, bx };
 
@@ -89,6 +90,7 @@ export default {
           this.puzzle = false;
           this.canvasInit();
         }
+        slider.style.left = "0px";
       };
 
       document.addEventListener("mousemove", move);
@@ -121,12 +123,13 @@ export default {
       this.drawBlock(block, blockxy, "clip");
     },
     //绘制拼图
-    drawBlock(ctx, xy = { x: 254, y: 109, r: 9 }, type) {
+    drawBlock(ctx, xy, type) {
       let x = xy.x,
         y = xy.y,
         r = xy.r,
         w = 40;
       let PI = Math.PI;
+      ctx.clearRect(0, 0, 1000, 1000);
       ctx.beginPath();
       ctx.moveTo(x, y);
       ctx.arc(x + (w + 5) / 2, y, r, -PI, 0, true);
@@ -146,9 +149,6 @@ export default {
     }
   }
 };
-// canvasplus
-// artisan js
-// rgraph
 </script>
 <style lang="stylus">
 .slidingPictures {
