@@ -1,163 +1,194 @@
 <template>
-  <div class="slider-check-wrap">
-    <canvas ref="bg" class="bg-canvas"></canvas>
-    <canvas ref="card" class="card-canvas"></canvas>
+  <div class="wrap" :style="{ width: width + 'px' }">
+    <div class="slider-check-wrap" :style="{ width: width + 'px' }">
+      <canvas ref="bg" :width="width" :height="height" class="bg-canvas"></canvas>
+      <canvas ref="card" :width="width" :height="height" class="card-canvas"></canvas>
+      <div class="slider-wrap">
+        <div
+          class="btn"
+          ref="btn"
+          @mousedown="onMousedown"
+          @mousemove="onMousemove"
+          @mouseup="onMouseup"
+        >></div>
+        <div class="slider" ref="slider">{{tips}}</div>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+const BTN_WIDTH = 50;
+
 export default {
   props: {
+    radius: {
+      type: Number,
+      default: 10
+    },
     src: {
-      type: String,
+      type: [String, Array],
       default: ""
     },
     width: {
-      type: [String, Number],
+      type: Number,
       default: 300
     },
     height: {
-      type: [String, Number],
+      type: Number,
       default: 300
-    },
-    theme: {
-      type: String,
-      default: "#3b8bcc"
     }
+  },
+  data() {
+    return {
+      range: 0,
+      tips: "向右滑动完成拼图"
+    };
   },
   mounted() {
-    this.initCanvas();
+    if (Array.isArray(this.src)) {
+      this.initCanvas(this.src[0]);
+    } else {
+      this.initCanvas(this.src);
+    }
+    this.$nextTick(() => {
+      this.pos = this.$refs["btn"].getBoundingClientRect();
+      console.log(this.pos);
+    });
   },
   methods: {
-    initCanvas() {
-      const bg = this.$refs["bg"];
+    onMousedown(e) {
+      this.isEnterDown = true;
+      this.diff = e.clientX - this.pos.left - 10;
+    },
+    onMousemove(e) {
+      if (!this.isEnterDown) return;
+      console.log(e.clientX);
+      if (
+        e.clientX - this.pos.left + BTN_WIDTH / 2 >
+          this.$refs["slider"].clientWidth ||
+        e.clientX - this.diff - this.pos.left - 10 < 0
+      ) {
+        return;
+      }
+      this.$refs["btn"].style.transform = `translate3d(${e.clientX -
+        this.pos.left -
+        this.diff -
+        10}px,0,0)`;
+    },
+    onMouseup() {
+      this.isEnterDown = false;
+      this.$refs["btn"].style.transform = `translate3d(0,0,0)`;
+    },
+    // onMouseleave(e) {
+    //   if (!this.isEnterDown) {
+    //     return false;
+    //   }
+    //   this.isEnterDown = false;
+    //   console.log(e);
+    // },
+    random(min, max) {
+      return Math.floor(Math.random() * (max - min + 1) + min);
+    },
+    initCanvas(src) {
+      this.bg = this.$refs["bg"];
       const card = this.$refs["card"];
-      const bgCtx = bg.getContext("2d");
+      const bgCtx = this.bg.getContext("2d");
       const cardCtx = card.getContext("2d");
-      const x = 150,
-        y = 40,
-        w = 42,
-        r = 10,
-        PI = Math.PI;
+      const r = this.radius;
+      const w = this.radius * 4;
+      const cardSize = w + r * 2;
+      const x = this.random(this.width / 2, this.width - cardSize);
+      const y = this.random(0, this.height - cardSize - 5 * r);
+
       const img = new Image();
       img.onload = () => {
-        bgCtx.drawImage(img, 0, 0, 300, 300);
-        cardCtx.drawImage(img, 0, 0, 300, 300);
-        var blockWidth = w + r * 2;
-        var _y = y - r * 2 + 2; // 滑块实际的y坐标
-        var ImageData = cardCtx.getImageData(x, _y, blockWidth, blockWidth);
-        card.width = blockWidth;
+        bgCtx.drawImage(img, 0, 0, this.width, this.height);
+        cardCtx.drawImage(img, 0, 0, this.width, this.height);
+        const _y = y - r * 2 + 3;
+        const ImageData = cardCtx.getImageData(x, _y, cardSize, cardSize);
+        card.width = cardSize;
         cardCtx.putImageData(ImageData, 0, _y);
       };
-      img.src = require("./img/timg.jpg");
+      const rect = {
+        x,
+        y,
+        w,
+        r
+      };
+      img.src = src;
 
-      function draw(ctx, operation) {
-        ctx.beginPath();
-        ctx.moveTo(x, y) +
-          ctx.lineTo(x + w / 2, y) +
-          ctx.arc(x + w / 2, y - r + 2, r, 0, 2 * PI) +
-          ctx.lineTo(x + w / 2, y);
-        ctx.lineTo(x + w, y) +
-          ctx.lineTo(x + w, y + w / 2) +
-          ctx.arc(x + w + r - 2, y + w / 2, r, 0, 2 * PI) +
-          ctx.lineTo(x + w, y + w / 2);
-        ctx.lineTo(x + w, y + w);
-        ctx.lineTo(x, y + w);
-        ctx.lineTo(x, y);
-        ctx.fillStyle = "#fff";
-        ctx[operation]();
-        ctx.beginPath();
-        ctx.arc(x, y + w / 2, r, 1.5 * PI, 0.5 * PI);
-        ctx.globalCompositeOperation = "xor";
-        ctx.fill();
-      }
-      draw(bgCtx, "fill");
-      draw(cardCtx, "clip");
+      this.draw(bgCtx, "fill", rect);
+      this.draw(cardCtx, "clip", rect);
+    },
+    draw(ctx, operation, rect) {
+      const PI = Math.PI;
+      const { x, y, w, r } = rect;
+      ctx.beginPath();
+      ctx.lineTo(x, y);
+      ctx.arc(x + w / 2, y, r, PI, 0);
+      ctx.lineTo(x + w, y);
+      ctx.arc(x + w, y + w / 2, r, 1.5 * PI, 0.5 * PI);
+      ctx.lineTo(x + w, y + w);
+      ctx.lineTo(x, y + w);
+      ctx.arc(x, y + w / 2, r, 0.5 * PI, 1.5 * PI, true);
+      ctx.closePath();
+      ctx.lineWidth = 2;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.7)";
+      ctx.stroke();
+      ctx[operation]();
+      ctx.globalCompositeOperation = "destination-over";
     }
   }
-  // methods: {
-  //   initCanvas() {
-  //     this.initWidth =
-  //       typeof this.width === "number" ? this.width : +this.width.slice(0, -2);
-
-  //     this.initHeight =
-  //       typeof this.height === "number"
-  //         ? this.height
-  //         : +this.height.slice(0, -2);
-
-  //     const bgInitX = this.random(this.initWidth / 2, this.initWidth - 50);
-  //     const cardInitX = 0;
-  //     const initY = this.random(0, this.initHeight - 50);
-
-  //     this.drawImage(bgInitX, cardInitX, initY);
-  //   },
-  //   drawImage(bgInitX, cardInitX, initY) {
-  //     this.bg = this.$refs["bg"];
-  //     this.bgCtx = this.bg.getContext("2d");
-  //     this.bg.width = this.initWidth;
-  //     this.bg.height = this.initHeight;
-
-  //     this.card = this.$refs["card"];
-  //     this.cardCtx = this.card.getContext("2d");
-  //     this.card.width = this.initWidth;
-  //     this.card.height = this.initHeight;
-
-  //     this.img = new Image();
-  //     this.img.src = this.src;
-  //     const bgPos = {
-  //       x: bgInitX,
-  //       y: initY,
-  //       r: 10
-  //     };
-  //     const cardPos = {
-  //       x: cardInitX,
-  //       y: initY,
-  //       r: 10
-  //     };
-  //     this.img.onload = () => {
-  //       this.drawBlock(this.bgCtx, bgPos, "fill");
-  //       this.drawBlock(this.cardCtx, cardPos, "clip");
-
-  //       this.bgCtx.drawImage(this.img, 0, 0, this.initWidth, this.initHeight);
-  //       this.cardCtx.drawImage(this.img, 0, 0, this.bg.width, this.initHeight);
-
-  //       // const y = 20 - 10 * 2 - 1;
-  //       const ImageData = this.bgCtx.getImageData(0, 0, 300, 300);
-  //       this.cardCtx.putImageData(ImageData, 100, 100);
-  //     };
-  //   },
-  //   drawBlock(ctx, xy, type) {
-  //     const x = xy.x;
-  //     const y = xy.y;
-  //     const r = xy.r;
-  //     const l = r * 4;
-  //     const PI = Math.PI;
-  //     ctx.beginPath();
-  //     ctx.lineTo(x, y);
-  //     ctx.arc(x + l / 2, y, r, PI, 0);
-  //     ctx.lineTo(x + l, y);
-  //     ctx.arc(x + l, y + l / 2, r, 1.5 * PI, 0.5 * PI);
-  //     ctx.lineTo(x + l, y + l);
-  //     ctx.lineTo(x, y + l);
-  //     ctx.arc(x, y + l / 2, r, 0.5 * PI, 1.5 * PI, true);
-  //     ctx.closePath();
-  //     ctx.lineWidth = 1;
-  //     ctx.fillStyle = this.theme;
-  //     ctx.strokeStyle = "rgba(255,255,255,.8)";
-  //     ctx.stroke();
-  //     ctx[type]();
-  //     ctx.globalCompositeOperation = "destination-over";
-  //   },
-  //   random(start, end) {
-  //     return Math.round(Math.random() * (end - start) + start);
-  //   }
-  // }
 };
 </script>
 
 <style lang="stylus" scoped>
+.wrap {
+  padding: 10px;
+  display: inline-block;
+}
+
 .slider-check-wrap {
-  .bg-canvas {
+  position: relative;
+  line-height: 1.5;
+  text-align: left;
+  font-family: 'Microsoft YaHei';
+  background-color: #fff;
+  cursor: default;
+  z-index: 110;
+  box-shadow: 0 0 2px 2px #eee;
+  border: 1px solid #eee;
+
+  .slider-wrap {
+    position: relative;
+    height: 40px;
+    border-radius: 20px;
+    margin: 10px;
+    white-space: nowrap;
+    background: #333;
+    user-select: none;
+
+    .btn {
+      position: absolute;
+      margin-top: -5px;
+      left: 0;
+      width: 50px;
+      height: 50px;
+      line-height: 46px;
+      text-align: center;
+      border-radius: 50%;
+      font-size: 40px;
+      color: #10b2fa;
+      font-weight: bold;
+      background: #666;
+    }
+
+    .slider {
+      text-align: center;
+      line-height: 40px;
+    }
   }
 
   .card-canvas {
