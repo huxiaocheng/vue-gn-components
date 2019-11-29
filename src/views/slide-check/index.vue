@@ -9,7 +9,10 @@ import SliderCheck from "./components/slide-check";
 export default {
   data() {
     return {
-      src: require("./components/img/timg.jpg")
+      src: [
+        require("./components/img/timg.jpg"),
+        require("./components/img/timg.png")
+      ]
     };
   },
   components: {

@@ -1,16 +1,21 @@
 <template>
-  <div class="wrap" :style="{ width: width + 'px' }">
+  <div
+    class="wrap"
+    :style="{ width: width + 'px' }"
+    @mouseup="onMouseup"
+    @mousemove.stop="onMousemove"
+    @mouseleave="onMouseup"
+  >
+    <div class="tips-info">
+      <span class="tips">完成拼图验证</span>
+      <span class="next-img" v-if="showNextImg" @click="onNextImg">换一张</span>
+    </div>
     <div class="slider-check-wrap" :style="{ width: width + 'px' }">
-      <canvas ref="bg" :width="width" :height="height" class="bg-canvas"></canvas>
-      <canvas ref="card" :width="width" :height="height" class="card-canvas"></canvas>
+      <canvas ref="bg" :width="width" :height="height" class="bg-canvas" />
+      <canvas ref="card" :width="width" :height="height" class="card-canvas" />
       <div class="slider-wrap">
-        <div
-          class="btn"
-          ref="btn"
-          @mousedown="onMousedown"
-          @mousemove="onMousemove"
-          @mouseup="onMouseup"
-        >></div>
+        <div class="progress-bar" ref="progress-bar"></div>
+        <div class="btn" ref="btn" @mousedown.stop="onMousedown">></div>
         <div class="slider" ref="slider">{{tips}}</div>
       </div>
     </div>
@@ -37,6 +42,10 @@ export default {
     height: {
       type: Number,
       default: 300
+    },
+    theme: {
+      type: String,
+      default: "#369"
     }
   },
   data() {
@@ -45,48 +54,103 @@ export default {
       tips: "向右滑动完成拼图"
     };
   },
+  computed: {
+    showNextImg() {
+      return Array.isArray(this.src) && this.src.length > 0;
+    }
+  },
   mounted() {
     if (Array.isArray(this.src)) {
       this.initCanvas(this.src[0]);
     } else {
       this.initCanvas(this.src);
     }
-    this.$nextTick(() => {
-      this.pos = this.$refs["btn"].getBoundingClientRect();
-      console.log(this.pos);
-    });
+    this.initDomInfo();
   },
   methods: {
+    onNextImg() {
+      this.reset();
+      if (Array.isArray(this.src)) {
+        this.initCanvas(this.src[Math.floor(Math.random() * this.src.length)]);
+      } else {
+        this.initCanvas(this.src);
+      }
+    },
+    initDomInfo() {
+      this.pos = this.$refs["btn"].getBoundingClientRect();
+      if (this.theme !== "#369") {
+        this.$refs["slider"].style.boxShadow = `0 0 10px 0 ${this.theme}`;
+        this.$refs["slider"].style.color = this.theme;
+        this.$refs["btn"].style.background = this.theme;
+        this.$refs["btn"].style.boxShadow = `0 0 10px 0 ${this.theme}`;
+      }
+    },
     onMousedown(e) {
       this.isEnterDown = true;
-      this.diff = e.clientX - this.pos.left - 10;
+      this.clickPos = e.clientX;
+      this.tips = "向右滑动完成拼图";
+      this.$refs["btn"].style.transition = "";
+      this.$refs["card"].style.transition = "";
+      this.$refs["progress-bar"].style.transition = "";
+      this.diff = e.clientX - this.pos.left;
     },
     onMousemove(e) {
       if (!this.isEnterDown) return;
-      console.log(e.clientX);
+      const slideWidth = this.$refs["slider"].clientWidth;
       if (
-        e.clientX - this.pos.left + BTN_WIDTH / 2 >
-          this.$refs["slider"].clientWidth ||
+        e.clientX + this.pos.left - this.diff - 2 + 20 > slideWidth ||
         e.clientX - this.diff - this.pos.left - 10 < 0
       ) {
         return;
       }
+      this.cardMovePos =
+        (this.width / this.$refs["slider"].clientWidth) *
+        (e.clientX - this.pos.left - this.diff - 8);
+
+      this.$refs[
+        "card"
+      ].style.transform = `translate3d(${this.cardMovePos}px,0,0)`;
       this.$refs["btn"].style.transform = `translate3d(${e.clientX -
         this.pos.left -
         this.diff -
-        10}px,0,0)`;
+        10}px, 0, 0)`;
+      this.$refs["progress-bar"].style.width = `${e.clientX -
+        this.pos.left -
+        this.diff +
+        BTN_WIDTH / 2 -
+        10}px`;
+      this.$refs["progress-bar"].style.background = "#42c3fc";
     },
-    onMouseup() {
+    onMouseup(e) {
+      if (!this.isEnterDown) return;
       this.isEnterDown = false;
-      this.$refs["btn"].style.transform = `translate3d(0,0,0)`;
+      if (this.clickPos === e.clientX) return;
+
+      if (this.cardMovePos + 3 > this.x && this.cardMovePos - 3 < this.x) {
+        this.tips = "验证通过";
+        this.$refs["progress-bar"].style.background = "#2cd277";
+        this.$emit("verifiedPass");
+      } else {
+        this.$refs["progress-bar"].style.background = "#ff5b57";
+      }
+
+      setTimeout(() => {
+        this.reset();
+        this.$refs["progress-bar"].style.transition = "0.3s all";
+        this.$refs["progress-bar"].style.width = "0px";
+        this.$refs["btn"].style.transition = "0.3s all";
+        this.$refs["btn"].style.transform = `translate3d(0,0,0)`;
+        this.$refs["card"].style.transition = "0.3s all";
+        this.$refs["card"].style.transform = `translate3d(0,0,0)`;
+        if (Array.isArray(this.src)) {
+          this.initCanvas(
+            this.src[Math.floor(Math.random() * this.src.length)]
+          );
+        } else {
+          this.initCanvas(this.src);
+        }
+      }, 1000);
     },
-    // onMouseleave(e) {
-    //   if (!this.isEnterDown) {
-    //     return false;
-    //   }
-    //   this.isEnterDown = false;
-    //   console.log(e);
-    // },
     random(min, max) {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
@@ -96,30 +160,38 @@ export default {
       const bgCtx = this.bg.getContext("2d");
       const cardCtx = card.getContext("2d");
       const r = this.radius;
-      const w = this.radius * 4;
-      const cardSize = w + r * 2;
-      const x = this.random(this.width / 2, this.width - cardSize);
-      const y = this.random(0, this.height - cardSize - 5 * r);
-
+      const w = r * 4;
+      const cardSize = r * 6;
+      this.x = this.random(this.width / 2, this.width - cardSize);
+      const y = this.random(2 * r, this.height - cardSize);
       const img = new Image();
+      img.crossOrigin = "Anonymous";
       img.onload = () => {
         bgCtx.drawImage(img, 0, 0, this.width, this.height);
         cardCtx.drawImage(img, 0, 0, this.width, this.height);
         const _y = y - r * 2 + 3;
-        const ImageData = cardCtx.getImageData(x, _y, cardSize, cardSize);
+        const ImageData = cardCtx.getImageData(this.x, _y, cardSize, cardSize);
         card.width = cardSize;
         cardCtx.putImageData(ImageData, 0, _y);
       };
       const rect = {
-        x,
+        x: this.x,
         y,
         w,
         r
       };
       img.src = src;
-
       this.draw(bgCtx, "fill", rect);
       this.draw(cardCtx, "clip", rect);
+    },
+    reset() {
+      const bg = this.$refs["bg"];
+      const bgCtx = bg.getContext("2d");
+      const card = this.$refs["card"];
+      const cardCtx = card.getContext("2d");
+      bgCtx.clearRect(0, 0, this.width, this.height);
+      cardCtx.clearRect(0, 0, this.width, this.height);
+      card.width = this.width;
     },
     draw(ctx, operation, rect) {
       const PI = Math.PI;
@@ -146,29 +218,53 @@ export default {
 
 <style lang="stylus" scoped>
 .wrap {
-  padding: 10px;
   display: inline-block;
+  // padding: 50px;
+  // margin: 50px;
+  // border: 50px solid red;
+  box-shadow: 0 0 2px 2px #eee;
+  font-family: 'Microsoft YaHei';
+
+  .tips-info {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0 10px;
+  }
+
+  .tips {
+    color: #666;
+  }
+
+  .next-img {
+    color: #06c;
+    font-size: 14px;
+    cursor: pointer;
+  }
 }
 
 .slider-check-wrap {
   position: relative;
   line-height: 1.5;
   text-align: left;
-  font-family: 'Microsoft YaHei';
   background-color: #fff;
-  cursor: default;
-  z-index: 110;
-  box-shadow: 0 0 2px 2px #eee;
-  border: 1px solid #eee;
 
   .slider-wrap {
     position: relative;
     height: 40px;
     border-radius: 20px;
-    margin: 10px;
-    white-space: nowrap;
-    background: #333;
+    margin: 10px 10px 20px;
     user-select: none;
+
+    .progress-bar {
+      position: absolute;
+      left: 0;
+      width: 0;
+      height: 40px;
+      overflow: hidden;
+      border-radius: 20px 0 0 20px;
+      background: #3bbcfc;
+    }
 
     .btn {
       position: absolute;
@@ -178,16 +274,21 @@ export default {
       height: 50px;
       line-height: 46px;
       text-align: center;
-      border-radius: 50%;
       font-size: 40px;
-      color: #10b2fa;
+      color: #fff;
       font-weight: bold;
-      background: #666;
+      background: #369;
+      border-radius: 50%;
+      box-shadow: 0px 0px 10px 0px #369;
     }
 
     .slider {
       text-align: center;
       line-height: 40px;
+      border-radius: 20px;
+      box-shadow: 0px 0px 10px 0px #369;
+      color: #369;
+      overflow: hidden;
     }
   }
 
