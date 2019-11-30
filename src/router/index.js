@@ -5,6 +5,7 @@ import Home from "../views/home";
 import CheckIn from '../views/checkIn';
 import ImgLabel from '../views/img-label';
 import SlideCheck from '../views/slide-check';
+import Watemark from '../views/watermark';
 
 Vue.use(VueRouter);
 
@@ -32,6 +33,9 @@ const routes = [
   {
     path: '/slide-check',
     component: SlideCheck
+  }, {
+    path: '/watemark',
+    component: Watemark
   }
 ];
 

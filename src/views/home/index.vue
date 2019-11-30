@@ -4,6 +4,7 @@
     <router-link class="btn" tag="button" to="checkIn">签到</router-link>
     <router-link class="btn" tag="button" to="imgLabel">图片标签</router-link>
     <router-link class="btn" tag="button" to="slide-check">滑动验证</router-link>
+    <router-link class="btn" tag="button" to="watemark">添加水印</router-link>
   </div>
 </template>
 
