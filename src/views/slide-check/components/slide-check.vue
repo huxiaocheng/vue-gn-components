@@ -140,8 +140,7 @@ export default {
         10}px, 0, 0)`;
       this.$refs["progress-bar"].style.width = `${e.clientX -
         this.pos.left -
-        this.diff +
-        BTN_WIDTH / 2 -
+        this.diff -
         10}px`;
       this.$refs["progress-bar"].style.background = "#42c3fc";
     },
@@ -290,6 +289,7 @@ export default {
       width: 0;
       height: 40px;
       overflow: hidden;
+      padding-left: 25px;
       border-radius: 20px 0 0 20px;
       background: #3bbcfc;
     }
