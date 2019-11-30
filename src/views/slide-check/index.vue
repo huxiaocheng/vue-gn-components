@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <slider-check :src="src"></slider-check>
+  <div class="wrap">
+    <slider-check :src="src" @verifiedPass="success"></slider-check>
   </div>
 </template>
 
@@ -9,14 +9,22 @@ import SliderCheck from "./components/slide-check";
 export default {
   data() {
     return {
-      src: [
-        require("./components/img/timg.jpg"),
-        require("./components/img/timg.png")
-      ]
+      src: [require("./components/img/timg.jpg")]
     };
+  },
+  methods: {
+    success(pos) {
+      console.log(pos);
+    }
   },
   components: {
     SliderCheck
   }
 };
 </script>
+
+<style lang="stylus">
+.wrap {
+  margin: 50px;
+}
+</style>

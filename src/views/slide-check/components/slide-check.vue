@@ -16,7 +16,7 @@
       <div class="slider-wrap">
         <div class="progress-bar" ref="progress-bar"></div>
         <div class="btn" ref="btn" @mousedown.stop="onMousedown">></div>
-        <div class="slider" ref="slider">{{tips}}</div>
+        <div class="slider" ref="slider">{{ tips }}</div>
       </div>
     </div>
   </div>
@@ -56,7 +56,7 @@ export default {
   },
   computed: {
     showNextImg() {
-      return Array.isArray(this.src) && this.src.length > 0;
+      return Array.isArray(this.src) && this.src.length > 1;
     }
   },
   mounted() {
@@ -86,6 +86,14 @@ export default {
       }
     },
     onMousedown(e) {
+      this.track = {
+        top: e.clientY,
+        bottom: e.clientY
+      };
+      this.track2 = {
+        top: e.clientY,
+        bottom: e.clientY
+      };
       this.isEnterDown = true;
       this.clickPos = e.clientX;
       this.tips = "向右滑动完成拼图";
@@ -94,19 +102,35 @@ export default {
       this.$refs["progress-bar"].style.transition = "";
       this.diff = e.clientX - this.pos.left;
     },
+    calcTrack(y) {
+      let moveToBottom = this.track.top;
+      let moveToTop = this.track.bottom;
+      if (y > this.track.top) {
+        this.track.top = y;
+        if (y > moveToTop) {
+          moveToTop = y;
+        }
+      } else if (y < this.track.bottom) {
+        this.track.bottom = y;
+        if (y < moveToBottom) {
+          moveToBottom = y;
+        }
+      }
+    },
     onMousemove(e) {
       if (!this.isEnterDown) return;
       const slideWidth = this.$refs["slider"].clientWidth;
       if (
-        e.clientX + this.pos.left - this.diff - 2 + 20 > slideWidth ||
-        e.clientX - this.diff - this.pos.left - 10 < 0
+        e.clientX - this.pos.left - this.diff - 10 + BTN_WIDTH > slideWidth ||
+        e.clientX - this.pos.left - this.diff - 10 < 0
       ) {
         return;
       }
+      this.calcTrack(e.clientY);
       this.cardMovePos =
-        (this.width / this.$refs["slider"].clientWidth) *
-        (e.clientX - this.pos.left - this.diff - 8);
-
+        ((this.width - this.radius * 5 + 2) /
+          (this.$refs["slider"].clientWidth - BTN_WIDTH)) *
+        (e.clientX - this.pos.left - this.diff - 11);
       this.$refs[
         "card"
       ].style.transform = `translate3d(${this.cardMovePos}px,0,0)`;
@@ -124,12 +148,18 @@ export default {
     onMouseup(e) {
       if (!this.isEnterDown) return;
       this.isEnterDown = false;
+
       if (this.clickPos === e.clientX) return;
 
       if (this.cardMovePos + 3 > this.x && this.cardMovePos - 3 < this.x) {
         this.tips = "验证通过";
         this.$refs["progress-bar"].style.background = "#2cd277";
-        this.$emit("verifiedPass");
+        setTimeout(() => {
+          this.$emit("verifiedPass", {
+            top: Math.abs(this.track.bottom - this.track2.bottom),
+            bottom: Math.abs(this.track.top - this.track2.top)
+          });
+        }, 1000);
       } else {
         this.$refs["progress-bar"].style.background = "#ff5b57";
       }
@@ -155,9 +185,9 @@ export default {
       return Math.floor(Math.random() * (max - min + 1) + min);
     },
     initCanvas(src) {
-      this.bg = this.$refs["bg"];
+      const bg = this.$refs["bg"];
       const card = this.$refs["card"];
-      const bgCtx = this.bg.getContext("2d");
+      const bgCtx = bg.getContext("2d");
       const cardCtx = card.getContext("2d");
       const r = this.radius;
       const w = r * 4;
@@ -185,8 +215,7 @@ export default {
       this.draw(cardCtx, "clip", rect);
     },
     reset() {
-      const bg = this.$refs["bg"];
-      const bgCtx = bg.getContext("2d");
+      const bgCtx = this.$refs["bg"].getContext("2d");
       const card = this.$refs["card"];
       const cardCtx = card.getContext("2d");
       bgCtx.clearRect(0, 0, this.width, this.height);
@@ -219,10 +248,9 @@ export default {
 <style lang="stylus" scoped>
 .wrap {
   display: inline-block;
-  // padding: 50px;
-  // margin: 50px;
-  // border: 50px solid red;
+  padding: 10px !important;
   box-shadow: 0 0 2px 2px #eee;
+  border-radius: 5px;
   font-family: 'Microsoft YaHei';
 
   .tips-info {

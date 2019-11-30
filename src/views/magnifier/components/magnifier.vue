@@ -145,7 +145,7 @@ export default {
       ) {
         top = this.small.offsetHeight - this.mask.offsetHeight + padddingTop;
       }
-      
+
       this.mask.style.left = left + "px";
       this.mask.style.top = top + "px";
 
