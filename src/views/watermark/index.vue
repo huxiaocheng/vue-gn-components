@@ -1,7 +1,7 @@
 <template>
   <div>
     <router-link to="/home" tag="button">去首页</router-link>
-    <Watermark></Watermark>
+    <Watermark />
   </div>
 </template>
 
