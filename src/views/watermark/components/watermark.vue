@@ -1,74 +1,87 @@
 <template>
   <div>
-    <canvas ref="canvas"></canvas>
-    <!-- <input
-      type="range"
-      min="0.5"
-      max="3.0"
-      step="0.01"
-      value="3.0"
-      ref="scale-range"
-      style="display: block;margin: 20px auto;width: 800px;"
-    />
-    <canvas ref="watermark-canvas" style="display:none;margin:0;border: 1px solid #aaa"></canvas>-->
+    <img v-watermark="{src: src, text: 'hello world'}" class="img" />
   </div>
 </template>
 
 <script>
 export default {
-  mounted() {
-    this.initCanvas();
+  data() {
+    return {
+      src: require("./img/timg.jpg")
+    };
   },
-  methods: {
-    initCanvas() {
-      const canvas = this.$refs["canvas"];
-      const ctx = canvas.getContext("2d");
-      ctx.beginPath();
-      ctx.arc(50, 50, 40, 0, 0.5 * Math.PI);
-      ctx.stroke();
+  directives: {
+    watermark: {
+      inserted(el, binding) {
+        const {
+          src,
+          text,
+          opacity = 0.3,
+          rotate = 20,
+          fontSize = 20,
+          type = "repeat"
+        } = binding.value;
+        el.src = src;
+        el.addEventListener("load", e => {
+          const canvas1 = document.createElement("canvas");
+          const ctx1 = canvas1.getContext("2d");
+          const canvas2 = document.createElement("canvas");
+          const ctx2 = canvas2.getContext("2d");
+          const width = e.target.width;
+          const height = e.target.height;
 
-      ctx.beginPath();
-      ctx.arc(150, 50, 40, 0, 0.5 * Math.PI, true);
-      ctx.closePath();
-      ctx.stroke();
-    },
-    initCanvas() {
-      const canvas = this.$refs["canvas"];
-      canvas.width = 400;
-      canvas.height = 400;
-      const ctx = canvas.getContext("2d");
-      this.watermarkCanvas = this.$refs["watermark-canvas"];
-      this.watermarkCanvasCtx = this.watermarkCanvas.getContext("2d");
-      const img = new Image();
-      const slider = this.$refs["scale-range"];
-      img.src = require("./img/timg.jpg");
-      img.onload = () => {
-        slider.addEventListener("mousemove", e => {
-          const scale = e.target.value;
-          this.drawImageByScale(scale, canvas, ctx, img);
+          canvas1.width = width;
+          canvas1.height = height;
+          canvas2.width = width;
+          canvas2.height = height;
+
+          ctx2.font = `${fontSize}px Arial`;
+          ctx2.fillStyle = `rgba(0,0,0,${opacity})`;
+          ctx2.textBaseLine = "middle";
+          const textWidth = ctx2.measureText(text).width + 50;
+          if (type === "repeat") {
+            ctx2.rotate((-rotate * Math.PI) / 180);
+            const xN = Math.ceil(width / textWidth) + 10;
+            console.log(xN);
+            const yN = Math.ceil(height / textWidth) + 10;
+            for (let i = 0; i < xN; i++) {
+              for (let j = 0; j < yN; j++) {
+                ctx2.fillText(
+                  text,
+                  i * textWidth - Math.min(rotate, 90) - textWidth * 3,
+                  j * (textWidth / 2) - Math.min(rotate, 90) - textWidth * 3
+                );
+              }
+            }
+          } else if (type === "left-top") {
+            ctx2.fillText(text, 30, 30 + fontSize);
+          } else if (type === "right-top") {
+            ctx2.fillText(text, width - 30 - textWidth, 30 + fontSize);
+          } else if (type === "right-bottom") {
+            ctx2.fillText(text, width - 30 - textWidth, height - 30);
+          } else if (type === "left-bottom") {
+            ctx2.fillText(text, 30, height - 30);
+          }
+
+          ctx1.clearRect(0, 0, width, height);
+          ctx1.drawImage(el, 0, 0, width, height);
+          ctx1.drawImage(canvas2, 0, 0, width, height);
+          el.parentNode.appendChild(canvas1);
+
+          setTimeout(() => {
+            el.parentNode.removeChild(el);
+          }, 0);
         });
-      };
-      this.watermarkCanvas.width = 600;
-      this.watermarkCanvas.height = 100;
-      this.watermarkCanvasCtx.font = "bold 50px Arial";
-      this.watermarkCanvasCtx.lineWidth = "1";
-      this.watermarkCanvasCtx.fillStyle = "rgba(0,0,0,0.5)";
-      this.watermarkCanvasCtx.textBaseLine = "middle";
-      this.watermarkCanvasCtx.fillText("==hello world==", 20, 50);
-    },
-    drawImageByScale(scale, canvas, ctx, img) {
-      const imgWidth = 400 * scale;
-      const imgHeight = 400 * scale;
-      const dx = canvas.width / 2 - imgWidth / 2;
-      const dy = canvas.height / 2 - imgHeight / 2;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(img, dx, dy, imgWidth, imgHeight);
-      ctx.drawImage(
-        this.watermarkCanvas,
-        canvas.width - this.watermarkCanvas.width,
-        canvas.height - this.watermarkCanvas.height
-      );
+      }
     }
   }
 };
 </script>
+
+<style lang="stylus">
+.img {
+  width: 500px;
+  height: 500px;
+}
+</style>

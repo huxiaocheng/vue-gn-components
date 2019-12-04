@@ -1,17 +1,90 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title>vue常用功能组件</title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but vue-gn-con doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width,initial-scale=1.0">
+  <link rel="icon" href="<%= BASE_URL %>favicon.ico">
+  <title>vue常用功能组件</title>
+</head>
+
+<body>
+  <noscript>
+    <strong>We're sorry but vue-gn-con doesn't work properly without JavaScript enabled. Please enable it to
+      continue.</strong>
+  </noscript>
+  <div id="app"></div>
+  <!-- built files will be auto injected -->
+</body>
+
 </html>
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Document</title>
+  <style>
+    .water {
+      width: 100vw;
+      height: 2000px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background-repeat: no-repeat;
+    }
+
+    .content {
+      width: 800px;
+      height: 2000px;
+      margin-left: auto;
+      margin-right: auto;
+      background: cadetblue;
+      overflow: hidden;
+    }
+  </style>
+</head>
+
+<!-- <body>
+  <div class="content">
+    <div class="water"></div>
+  </div>
+  <script src="https://cdn.bootcss.com/jquery/3.4.1/jquery.js"></script>
+  <script>
+    // 添加水印方法
+    function addWaterMarker(str) {
+      var cpyName = str;
+      if (str.length > 16) {
+        cpyName = str.substring(0, 16);
+      }
+      var can = document.createElement('canvas');
+      var report = $('.content')[0];
+      report.appendChild(can);
+      can.width = 180;
+      can.height = 110;
+      can.style.display = 'none';
+      can.style.zIndex = '999'
+
+      var cans = can.getContext('2d');
+      cans.rotate(-25 * Math.PI / 180);
+      cans.font = "800 30px Microsoft JhengHei";
+      cans.fillStyle = "#000";
+      cans.textAlign = 'center';
+      cans.textBaseline = 'Middle';
+      if (cans.measureText(cpyName).width > 180) {
+        var size = 180 / cpyName.length
+        cans.font = '800 ' + size + 'px ' + ' Microsoft JhengHei'
+      }
+      cans.fillText(cpyName, 60, 100);
+      report.style.backgroundImage = "url(" + can.toDataURL("image/png") + ")";
+    }
+    addWaterMarker('测试水印');
+  </script>
+</body>
+
+</html> -->
