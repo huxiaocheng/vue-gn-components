@@ -51,8 +51,8 @@ export default {
   data() {
     return {
       isShow: false,
-      maxImgWidth: "500px",
-      maxImgHeight: "500px"
+      maxImgWidth: "",
+      maxImgHeight: ""
     };
   },
   methods: {
@@ -182,13 +182,13 @@ export default {
 
   .small-wrap {
     display: inline-block;
-    opacity: move;
     z-index: 1;
     border: 1px solid #ccc;
     box-sizing: border-box;
 
     .mask-wrap {
       position: absolute;
+      cursor: move;
       background: RGBA(255, 255, 255, 0.5);
       z-index: 1;
     }
