@@ -1,7 +1,7 @@
 <template>
-  <div class="wrap">
+  <div class="slider-check-wrap">
     <router-link to="/home" tag="button">去首页</router-link>
-    <slider-check :src="src" @verifiedPass="success"></slider-check>
+    <slider-check :width="500" :height="500" :src="src" @success="success" @fail="fail"></slider-check>
   </div>
 </template>
 
@@ -14,6 +14,9 @@ export default {
     };
   },
   methods: {
+    fail() {
+      console.log("fail");
+    },
     success(pos) {
       console.log(pos);
     }
@@ -24,8 +27,4 @@ export default {
 };
 </script>
 
-<style lang="stylus">
-.wrap {
-  margin: 50px;
-}
-</style>
+<style lang="stylus"></style>

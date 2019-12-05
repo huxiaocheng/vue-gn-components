@@ -154,12 +154,15 @@ export default {
         this.tips = "验证通过";
         this.$refs["progress-bar"].style.background = "#2cd277";
         setTimeout(() => {
-          this.$emit("verifiedPass", {
+          this.$emit("success", {
             top: Math.abs(this.track.bottom - this.track2.bottom),
             bottom: Math.abs(this.track.top - this.track2.top)
           });
         }, 1000);
       } else {
+        setTimeout(() => {
+          this.$emit("fail");
+        }, 1000);
         this.$refs["progress-bar"].style.background = "#ff5b57";
       }
 

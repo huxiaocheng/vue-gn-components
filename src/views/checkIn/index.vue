@@ -36,8 +36,8 @@ export default {
     getCurrentDate() {
       const D = new Date();
       this.curYear = D.getFullYear();
-      this.curMonth = D.getMonth() + 1 < 10 ? "0" + D.getMonth() : D.getMonth();
-      this.curDay = D.getDate() < 10 ? "0" + D.getDate() : D.getDate();
+      this.curMonth = D.getMonth();
+      this.curDay = D.getDate();
     },
     retCheckIns(n) {
       const newD = new Date(this.curYear, this.curMonth, (this.curDay += n));

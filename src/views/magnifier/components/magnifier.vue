@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="wrap" ref="wrap">
+    <div class="magnifier-wrap" ref="wrap">
       <div
         class="small-wrap"
         ref="small"
@@ -12,7 +12,13 @@
         <img :src="minImgUrl" :width="boxSize" :height="boxSize" />
       </div>
       <div class="max-wrap" ref="maxBox" v-show="isShow">
-        <img :src="maxImgUrl" class="img" ref="img" @load="setMaskSize" />
+        <img
+          :src="maxImgUrl"
+          :style="{width: maxImgWidth + 'px', height: maxImgHeight + 'px'}"
+          class="img"
+          ref="img"
+          @load="setMaskSize"
+        />
       </div>
     </div>
   </div>
@@ -44,20 +50,21 @@ export default {
   },
   data() {
     return {
-      isShow: false
+      isShow: false,
+      maxImgWidth: "500px",
+      maxImgHeight: "500px"
     };
   },
-  mounted() {
-    this.initDom();
-  },
   methods: {
-    setMaskSize() {
-      // 设置遮罩层大小
-      const mask = this.$refs["mask"];
-      const maxImgWidth = this.$refs["img"].width;
-      const minBoxWidth = this.smallWidth;
-      mask.style.width = (minBoxWidth / maxImgWidth) * minBoxWidth + "px";
-      mask.style.height = (minBoxWidth / maxImgWidth) * minBoxWidth + "px";
+    setMaskSize(e) {
+      this.isLoad = true;
+      this.maxImgWidth = e.target.width;
+      this.maxImgHeight = e.target.height;
+      this.$refs["img"].width = e.target.width;
+      this.$refs["img"].height = e.target.height;
+      this.$nextTick(() => {
+        this.initDom();
+      });
     },
     initDom() {
       this.wrap = this.$refs["wrap"];
@@ -67,7 +74,6 @@ export default {
       this.small = this.$refs["small"];
       this.smallWidth = this.getDomAttr(this.small, "width");
       this.smallHeight = this.getDomAttr(this.small, "height");
-
       this.maxBox.style.width = this.boxSize + "px";
       this.maxBox.style.height = this.boxSize + "px";
     },
@@ -81,6 +87,14 @@ export default {
       this.isShow = false;
     },
     onMousemove(e) {
+      if (!this.wrap || !this.isLoad) return;
+
+      const mask = this.$refs["mask"];
+      const maxImgWidth = this.$refs["img"].width;
+      const minBoxWidth = this.smallWidth;
+      mask.style.width = minBoxWidth * (minBoxWidth / maxImgWidth) + "px";
+      mask.style.height = minBoxWidth * (minBoxWidth / maxImgWidth) + "px";
+
       const leftPosition = this.wrap.getBoundingClientRect().left;
       const topPosition = this.wrap.getBoundingClientRect().top;
       const paddingLeft = this.getDomAttr(this.wrap, "padding-left");
@@ -148,12 +162,10 @@ export default {
 
       this.mask.style.left = left + "px";
       this.mask.style.top = top + "px";
-
       const pX =
         (left - paddingLeft) / (this.smallWidth - this.mask.offsetWidth);
       const pY =
         (top - padddingTop) / (this.smallHeight - this.mask.offsetHeight);
-
       this.maxImg.style.left =
         -pX * (this.maxImg.width - this.maxBox.offsetWidth) + "px";
       this.maxImg.style.top =
@@ -164,7 +176,7 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.wrap {
+.magnifier-wrap {
   position: relative;
   box-sizing: border-box;
 
@@ -183,7 +195,6 @@ export default {
   }
 
   .max-wrap {
-    display: inline-block;
     position: fixed;
     border: 1px solid #ccc;
     overflow: hidden;
