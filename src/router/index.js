@@ -6,6 +6,7 @@ import CheckIn from '../views/checkIn';
 import ImgLabel from '../views/img-label';
 import SlideCheck from '../views/slide-check';
 import Watemark from '../views/watermark';
+import Countdown from '../views/countdown';
 
 Vue.use(VueRouter);
 
@@ -36,6 +37,9 @@ const routes = [
   }, {
     path: '/watemark',
     component: Watemark
+  }, {
+    path: '/countdown',
+    component: Countdown
   }
 ];
 
