@@ -64,21 +64,31 @@ export default {
           time = this.time;
         } else if (typeof this.time === "string") {
           if (this.time.indexOf("-") !== -1) {
-            time = new Date(...this.time.split("-"));
+            const temp = this.time.split("-");
+            temp[1] = temp[1] - 1;
+            time = new Date(...temp);
           } else if (this.time.indexOf(".") !== -1) {
-            time = new Date(...this.time.split("."));
+            const temp = this.time.split(".");
+            temp[1] = temp[1] - 1;
+            time = new Date(...temp);
           }
         } else if ((this.time + "").length === 13) {
           time = new Date(this.time);
         }
         time = time.getTime() - new Date().getTime();
 
-        if (time < 0) return;
+        if (time < 0) {
+          return;
+        }
 
         this.mySetInterval(timer => {
           time -= 1000;
-          this.normalizeTime(time);
           this.timer = timer;
+          if (time <= 0) {
+            this.$emit("end");
+            this.pause();
+          }
+          this.normalizeTime(time);
         }, 1000);
       }
     },
@@ -89,6 +99,7 @@ export default {
       const oneDay = 60 * 60 * 24;
       const oneHours = 60 * 60;
       const oneMinutes = 60;
+
       if (time > oneYear) {
         this.date.year =
           Math.floor(time / oneYear) > 1 ? Math.floor(time / oneYear) : 0;
