@@ -7,6 +7,7 @@ import ImgLabel from '../views/img-label';
 import SlideCheck from '../views/slide-check';
 import Watemark from '../views/watermark';
 import Countdown from '../views/countdown';
+import ImageCur from '../views/image-cut';
 
 Vue.use(VueRouter);
 
@@ -34,12 +35,18 @@ const routes = [
   {
     path: '/slide-check',
     component: SlideCheck
-  }, {
+  },
+  {
     path: '/watemark',
     component: Watemark
-  }, {
+  },
+  {
     path: '/countdown',
     component: Countdown
+  },
+  {
+    path: '/imageCur',
+    component: ImageCur
   }
 ];
 

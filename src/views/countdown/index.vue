@@ -37,10 +37,10 @@ export default {
   },
   methods: {
     end1() {
-      console.log("end1231");
+      console.log("倒计时模式结束");
     },
     end2() {
-      console.log("end123131!!!!");
+      console.log("倒数模式结束");
     },
     SMSModeStart() {
       this.$refs["countdown2"].start();

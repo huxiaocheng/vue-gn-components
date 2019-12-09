@@ -101,52 +101,52 @@ export default {
       const oneMinutes = 60;
 
       if (time > oneYear) {
-        this.date.year =
-          Math.floor(time / oneYear) > 1 ? Math.floor(time / oneYear) : 0;
+        this.date.year = this.paramsProcess(time, oneYear);
       }
       if (time > oneMonth) {
-        this.date.month =
-          Math.floor((time % oneYear) / oneMonth) > 1
-            ? Math.floor((time % oneYear) / oneMonth)
-            : 0;
+        this.date.month = this.paramsProcess(time, oneYear, oneMonth);
       }
       if (time > oneDay) {
-        this.date.date =
-          Math.floor(((time % oneYear) % oneMonth) / oneDay) > 1
-            ? Math.floor(((time % oneYear) % oneMonth) / oneDay)
-            : 0;
+        this.date.date = this.paramsProcess(time, oneYear, oneMonth, oneDay);
       }
       if (time > oneHours) {
-        this.date.hours =
-          Math.floor((((time % oneYear) % oneMonth) % oneDay) / oneHours) > 1
-            ? Math.floor((((time % oneYear) % oneMonth) % oneDay) / oneHours)
-            : 0;
+        this.date.hours = this.paramsProcess(
+          time,
+          oneYear,
+          oneMonth,
+          oneDay,
+          oneHours
+        );
       }
       if (time > oneMinutes) {
-        this.date.minutes =
-          Math.floor(
-            ((((time % oneYear) % oneMonth) % oneDay) % oneHours) / oneMinutes
-          ) > 1
-            ? Math.floor(
-                ((((time % oneYear) % oneMonth) % oneDay) % oneHours) /
-                  oneMinutes
-              )
-            : 0;
+        this.date.minutes = this.paramsProcess(
+          time,
+          oneYear,
+          oneMonth,
+          oneDay,
+          oneHours,
+          oneMinutes
+        );
       }
       if (time > 1) {
-        this.date.seconds =
-          Math.floor(
-            (((((time % oneYear) % oneMonth) % oneDay) % oneHours) %
-              oneMinutes) /
-              1
-          ) > 1
-            ? Math.floor(
-                (((((time % oneYear) % oneMonth) % oneDay) % oneHours) %
-                  oneMinutes) /
-                  1
-              )
-            : 0;
+        this.date.seconds = this.paramsProcess(
+          time,
+          oneYear,
+          oneMonth,
+          oneDay,
+          oneHours,
+          oneMinutes,
+          1
+        );
       }
+    },
+    paramsProcess(...args) {
+      const params = args.slice(0, -1);
+      const last = args[args.length - 1];
+      const val = params.reduce((pre, cur) => {
+        return pre % cur;
+      });
+      return Math.floor(val / last > 1 ? val / last : 0);
     },
     mySetInterval(fn, delay) {
       let timer;
