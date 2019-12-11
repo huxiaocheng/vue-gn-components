@@ -6,7 +6,6 @@
     <router-link class="btn" tag="button" to="slide-check">滑动验证</router-link>
     <router-link class="btn" tag="button" to="watemark">添加水印</router-link>
     <router-link class="btn" tag="button" to="countdown">倒计时</router-link>
-    <router-link class="btn" tag="button" to="avatarCur">图片裁切</router-link>
   </div>
 </template>
 

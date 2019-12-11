@@ -62,7 +62,7 @@ export default {
       type: [Number, String],
       default: 500
     },
-    themeColor: {
+    theme: {
       type: String,
       default: "#3b8bcc"
     }
@@ -228,7 +228,7 @@ export default {
       this.isShowMenu = false;
     },
     onMouseEnter(e) {
-      e.target.style.backgroundColor = this.themeColor;
+      e.target.style.backgroundColor = this.theme;
       e.target.style.color = "#fff";
     },
     onMouseLeave(e) {

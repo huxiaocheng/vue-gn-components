@@ -36,7 +36,6 @@ export default {
         hours: 0,
         minutes: 0,
         seconds: 0,
-        milliseconds: 0,
         timeLeft: localStorage.getItem("__SMS_total_time__") || this.totalTime
       }
     };

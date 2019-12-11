@@ -1,7 +1,7 @@
 <template>
   <div>
     <magnifier
-      style="margin: 50px;padding: 50px;"
+      style="margin: 50px 0 0 450px;padding: 50px;"
       :boxSize="400"
       :minImgUrl="require('./components/img/min.jpg')"
       :maxImgUrl="require('./components/img/max.jpg')"

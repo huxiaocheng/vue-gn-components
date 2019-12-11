@@ -7,7 +7,6 @@ import ImgLabel from '../views/img-label';
 import SlideCheck from '../views/slide-check';
 import Watemark from '../views/watermark';
 import Countdown from '../views/countdown';
-import AvatarCur from '../views/avatar-cut';
 
 Vue.use(VueRouter);
 
@@ -43,10 +42,6 @@ const routes = [
   {
     path: '/countdown',
     component: Countdown
-  },
-  {
-    path: '/avatar',
-    component: AvatarCur
   }
 ];
 
