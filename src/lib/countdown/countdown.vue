@@ -6,7 +6,7 @@
 
 <script>
 export default {
-  name: "countdown",
+  name: "Countdown",
   props: {
     time: {
       type: [Date, String, Number],

@@ -64,7 +64,7 @@
 
 <script>
 export default {
-  name: "checkIn",
+  name: "CheckIn",
   props: {
     checkIns: {
       type: Array,

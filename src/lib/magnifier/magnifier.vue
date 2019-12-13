@@ -26,7 +26,7 @@
 
 <script>
 export default {
-  name: 'magnifier',
+  name: 'Magnifier',
   props: {
     boxSize: {
       type: Number,

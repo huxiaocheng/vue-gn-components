@@ -41,7 +41,6 @@
   </div>
 </template>
 
-
 <script>
 import DomToImg from "dom-to-image";
 const LABEL_INIT_HEIGHT = 30;
