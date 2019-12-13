@@ -8,7 +8,7 @@
 export default {
   data() {
     return {
-      src: require("./img/timg.jpg")
+      src: require("../../slide-check/components/img/min.jpg")
     };
   },
   directives: {
@@ -42,9 +42,8 @@ export default {
           const textWidth = ctx2.measureText(text).width + 50;
           if (type === "repeat") {
             ctx2.rotate((-rotate * Math.PI) / 180);
-            const xN = Math.ceil(width / textWidth) + 10;
-            console.log(xN);
-            const yN = Math.ceil(height / textWidth) + 10;
+            const xN = Math.ceil(width / textWidth) + 15;
+            const yN = Math.ceil(height / textWidth) + 15;
             for (let i = 0; i < xN; i++) {
               for (let j = 0; j < yN; j++) {
                 ctx2.fillText(

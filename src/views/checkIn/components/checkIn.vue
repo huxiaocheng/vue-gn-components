@@ -2,16 +2,36 @@
   <div class="datepicker-wrap">
     <div class="date-wrapper" :style="{'width': typeof size === String ? size : size + 'px'}">
       <div class="header">
-        <a href="javascript:;" class="btn prev" @click="showDateInfo('prevYear')">&lt;&lt;</a>
-        <a href="javascript:;" class="btn prev" @click="showDateInfo('prevMonth')">&lt;</a>
-        <a href="javascript:;" class="btn next" @click="showDateInfo('nextYear')">&gt;&gt;</a>
-        <a href="javascript:;" class="btn next" @click="showDateInfo('nextMonth')">&gt;</a>
+        <a
+          href="javascript:;"
+          :style="{'color': theme}"
+          class="btn prev"
+          @click="showDateInfo('prevYear')"
+        >&lt;&lt;</a>
+        <a
+          href="javascript:;"
+          :style="{'color': theme}"
+          class="btn prev"
+          @click="showDateInfo('prevMonth')"
+        >&lt;</a>
+        <a
+          href="javascript:;"
+          :style="{'color': theme}"
+          class="btn next"
+          @click="showDateInfo('nextYear')"
+        >&gt;&gt;</a>
+        <a
+          href="javascript:;"
+          :style="{'color': theme}"
+          class="btn next"
+          @click="showDateInfo('nextMonth')"
+        >&gt;</a>
         <span
           class="curr-month"
         >{{dateInfo.year}}-{{10 > dateInfo.month ? '0' + dateInfo.month : dateInfo.month}}</span>
       </div>
-      <div class="date-content">
-        <ul class="week-title">
+      <div class="date-content" ref="content">
+        <ul class="week-title" :style="{'background': theme}">
           <li class="week-item">一</li>
           <li class="week-item">二</li>
           <li class="week-item">三</li>
@@ -20,14 +40,22 @@
           <li class="week-item">六</li>
           <li class="week-item">日</li>
         </ul>
-        <ul class="date-list">
+        <ul
+          class="date-list"
+          ref="week"
+          v-for="(item, i) in dateInfo.detailInfo.length / 7"
+          :key="i"
+        >
           <li
             class="date-item"
-            v-for="(date,index) in dateInfo.detailInfo"
+            v-for="(date,index) in dateInfo.detailInfo.slice(i * 7, i * 7 + 7)"
             :key="index"
             :class="{'active': date.isCheckIn, 'no-current-month': date.date !== date.curDate}"
             @click="onSelectMonth(date.curMonth + 1, dateInfo)"
-          >{{date.curDate}}</li>
+          >
+            {{date.curDate}}
+            <span v-if="date.isCheckIn" :style="{'background': theme}"></span>
+          </li>
         </ul>
       </div>
     </div>
@@ -36,17 +64,6 @@
 
 <script>
 export default {
-  data() {
-    return {
-      dateInfo: {}
-    };
-  },
-  created() {
-    this.getDateInfo();
-  },
-  mounted() {
-    this._normalizeTreeToInfo(this._createDateTree(this.checkIns));
-  },
   props: {
     checkIns: {
       type: Array,
@@ -57,7 +74,22 @@ export default {
     size: {
       type: [String, Number],
       default: 500
+    },
+    theme: {
+      type: String,
+      default: "#369"
     }
+  },
+  data() {
+    return {
+      dateInfo: {}
+    };
+  },
+  created() {
+    this.getDateInfo();
+  },
+  mounted() {
+    this._normalizeTreeToInfo(this._createDateTree(this.checkIns));
   },
   watch: {
     checkIns(newIns) {
@@ -104,9 +136,8 @@ export default {
       function normalizeDate(year, month, day) {
         const D = new Date(year, month, day);
         const y = D.getFullYear();
-        const m =
-          D.getMonth() + 1 < 10 ? "0" + (D.getMonth() + 1) : D.getMonth() + 1;
-        const d = D.getDate() < 10 ? "0" + D.getDate() : D.getDate();
+        const m = D.getMonth() + 1 < 10 ? D.getMonth() + 1 : D.getMonth() + 1;
+        const d = D.getDate() < 10 ? D.getDate() : D.getDate();
         return `${y}-${m}-${d}`;
       }
       this.dateInfo = {
@@ -140,7 +171,7 @@ export default {
         return {};
       }
       const ret = {};
-      dates.forEach(date => {
+      this._normalizeDate(dates).forEach(date => {
         const year = date.split("-")[0];
         const month = date.split("-")[1];
         ret[year] = ret[year] || {};
@@ -149,18 +180,38 @@ export default {
       });
       return ret;
     },
+    _normalizeDate(dates) {
+      if (Array.isArray(dates)) {
+        return dates.map(date => {
+          if ((date + "").length === 13) {
+            const D = new Date(date);
+            return `${D.getFullYear()}-${D.getMonth() + 1}-${D.getDate()}`;
+          } else if (date.indexOf(".") > -1) {
+            return date.replace(/\./g, "-");
+          } else {
+            return date;
+          }
+        });
+      }
+    },
     _normalizeTreeToInfo(dateTree = {}) {
+      if (!this.isSetFontSize) {
+        setTimeout(() => {
+          this.isSetFontSize = true;
+          this.$refs["content"].style.fontSize =
+            this.$refs["week"] &&
+            this.$refs["week"][0].clientHeight * 0.3 + "px";
+        }, 20);
+      }
+
       if (!Object.keys(dateTree).length) {
         return;
       }
       const currentDate = dateTree[this.dateInfo.year]
         ? dateTree[this.dateInfo.year][
-            this.dateInfo.month < 10
-              ? "0" + this.dateInfo.month
-              : this.dateInfo.month
+            this.dateInfo.month < 10 ? this.dateInfo.month : this.dateInfo.month
           ] || []
         : [];
-
       if (!currentDate.length) {
         return;
       }
@@ -174,6 +225,7 @@ export default {
           }
         }
       }
+
       this.dateInfo.detailInfo.__ob__.dep.notify();
     }
   }
@@ -189,7 +241,6 @@ export default {
     display: inline-block;
     margin: 10px;
     width: 300px;
-    font-size: 16px;
     color: #666;
     box-shadow: 2px 2px 8px 2px RGBA(128, 128, 128, 0.3);
 
@@ -204,7 +255,6 @@ export default {
 
       .btn {
         font-family: serif;
-        font-size: 16px;
         padding: 0 8px;
         height: 50px;
         line-height: 50px;
@@ -223,9 +273,13 @@ export default {
     }
 
     .date-content {
+      display: flex;
+      flex-wrap: wrap;
+
       .week-title {
         display: flex;
         background: #80b6cc;
+        width: 100%;
         color: #fff;
       }
 
@@ -234,45 +288,48 @@ export default {
         padding-top: 4%;
         padding-bottom: 4%;
         text-align: center;
+        border-left: 1px solid #fff;
       }
     }
 
     .date-list {
       display: flex;
-      flex-wrap: wrap;
+      width: 100%;
 
       .date-item {
         position: relative;
-        width: 14.2%;
+        flex: 1;
         text-align: center;
-        padding-top: 3%;
-        padding-bottom: 3%;
+        padding-top: 4%;
+        padding-bottom: 4%;
         box-sizing: border-box;
-        font-size: 14px;
         box-shadow: 0 0 0 1px #eee;
 
-        &.no-current-month {
-          color: #ccc;
-          background: #fafafa;
-          font-size: 12px;
-
-          &:hover {
-            cursor: pointer;
-          }
-        }
-
-        &.active::after {
+        > span {
           position: absolute;
           left: 50%;
           top: 50%;
           transform: translate(-50%, -50%);
           content: ' ';
           display: block;
-          width: 25px;
-          height: 25px;
+          padding-top: 50%;
+          padding-left: 50%;
           border-radius: 50%;
           background: #80b6cc;
           opacity: 0.5;
+        }
+
+        &.no-current-month {
+          color: #ccc;
+          background: #fafafa;
+
+          &:hover {
+            cursor: pointer;
+          }
+        }
+
+        &.active {
+          font-weight: bold;
         }
       }
     }

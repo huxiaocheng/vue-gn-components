@@ -29,7 +29,7 @@ export default {
   props: {
     boxSize: {
       type: Number,
-      default: 300
+      default: 500
     },
     minImgUrl: {
       type: String,

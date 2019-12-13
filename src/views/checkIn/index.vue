@@ -6,7 +6,7 @@
       <button style="margin-left: 10px" @click="onCheckIn(3)">测试签到三天后</button>
       <router-link to="/home" style="margin-left: 10px" tag="button">去首页</router-link>
     </div>
-    <CheckIn :checkIns="checkIns" :size="500" />
+    <CheckIn :checkIns="checkIns" />
   </div>
 </template>
 
@@ -34,29 +34,13 @@ export default {
       }
     },
     getCurrentDate() {
-      const D = new Date();
-      this.curYear = D.getFullYear();
-      this.curMonth = D.getMonth();
-      this.curDay = D.getDate();
+      this.curTime = new Date().getTime();
     },
     retCheckIns(n) {
-      const newD = new Date(this.curYear, this.curMonth, (this.curDay += n));
-      const newYear = newD.getFullYear();
-      const newMonth =
-        newD.getMonth() + 1 < 10
-          ? "0" + (newD.getMonth() + 1)
-          : newD.getMonth() + 1;
-      const newDay =
-        newD.getDate() < 10 ? "0" + newD.getDate() : newD.getDate();
-      return `${newYear}-${newMonth}-${newDay}`;
+      return (this.curTime += n * 24 * 60 * 60 * 1000);
     },
     onCheckInToday() {
-      const D = new Date();
-      const y = D.getFullYear();
-      const m =
-        D.getMonth() + 1 < 10 ? "0" + (D.getMonth() + 1) : D.getMonth() + 1;
-      const d = D.getDate() < 10 ? "0" + D.getDate() : D.getDate();
-      return `${y}-${m}-${d}`;
+      return new Date().getTime();
     }
   },
   components: {
