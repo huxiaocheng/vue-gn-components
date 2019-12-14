@@ -6,8 +6,20 @@
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint"
+    "lint": "vue-cli-service lint",
+    "lib": "vue-cli-service build --target lib --name vue-gn-components --dest lib packages/index.js"
   },
+  "keywords": [
+    "features",
+    "vue",
+    "components",
+    "watermark",
+    "verification"
+  ],
+  "main": "lib/vue-gn-components.umd.min.js",
+  "files": [
+    "dist"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/huxiaocheng/vue-gn-components"
@@ -15,6 +27,7 @@
   "author": "https://juejin.im/user/5af23b36f265da0b9d783023",
   "homepage": "https://github.com/huxiaocheng/vue-gn-components",
   "license": "MIT",
+  "prepublishOnly": "npm run build",
   "dependencies": {
     "core-js": "^3.3.2",
     "dom-to-image": "^2.6.0",
