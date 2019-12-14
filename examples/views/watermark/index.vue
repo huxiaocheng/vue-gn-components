@@ -1,16 +1,16 @@
 <template>
   <div>
+    <img v-watermark="{src:src, text: 'hello'}" alt />
     <router-link to="/home" tag="button">去首页</router-link>
-    <Watermark />
   </div>
 </template>
 
 <script>
-import Watermark from "../../../packages/watermark/watermark";
-
 export default {
-  components: {
-    Watermark
+  data() {
+    return {
+      src: require("./img/min.jpg")
+    };
   }
 };
 </script>

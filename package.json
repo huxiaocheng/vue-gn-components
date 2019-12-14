@@ -1,6 +1,6 @@
 {
   "name": "vue-gn-components",
-  "version": "1.0.0",
+  "version": "1.0.6",
   "private": false,
   "description": "一些标准组件库里没有的组件",
   "scripts": {
@@ -17,8 +17,9 @@
     "verification"
   ],
   "main": "lib/vue-gn-components.umd.min.js",
+  "module": "lib/vue-gn-components.umd.min.js",
   "files": [
-    "dist"
+    "lib"
   ],
   "repository": {
     "type": "git",
@@ -27,7 +28,7 @@
   "author": "https://juejin.im/user/5af23b36f265da0b9d783023",
   "homepage": "https://github.com/huxiaocheng/vue-gn-components",
   "license": "MIT",
-  "prepublishOnly": "npm run build",
+  "prepublishOnly": "npm run lib",
   "dependencies": {
     "core-js": "^3.3.2",
     "dom-to-image": "^2.6.0",
@@ -42,6 +43,7 @@
     "@vue/cli-service": "^4.0.0",
     "@vue/eslint-config-prettier": "^5.0.0",
     "babel-eslint": "^10.0.3",
+    "babel-plugin-component": "^1.1.1",
     "eslint": "^5.16.0",
     "eslint-plugin-prettier": "^3.1.1",
     "eslint-plugin-vue": "^5.0.0",

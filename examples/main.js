@@ -2,9 +2,9 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import './reset.css';
-import VueGnComponents from '../packages'
+import { CheckIn } from '../packages'
 
-Vue.use(VueGnComponents)
+Vue.use(CheckIn)
 
 Vue.config.productionTip = false;
 
