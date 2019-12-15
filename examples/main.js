@@ -2,9 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import './reset.css';
-import { CheckIn } from '../packages'
-
-Vue.use(CheckIn)
+// import  watermark  from '../lib'
+// Vue.use(watermark.watermark)
 
 Vue.config.productionTip = false;
 

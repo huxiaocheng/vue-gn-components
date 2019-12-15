@@ -1,8 +1,8 @@
-import CheckIn from './checkIn'
-import Countdown from './countdown'
-import ImgLabel from './imgLabel'
-import Magnifier from './magnifier'
-import SlideCheck from './slideCheck'
+import CheckIn from './CheckIn'
+import Countdown from './Countdown'
+import ImgLabel from './ImgLabel'
+import Magnifier from './Magnifier'
+import SlideCheck from './SlideCheck'
 import watermark from './watermark'
 import './reset.css'
 
@@ -17,13 +17,29 @@ const components = [
 const install = Vue => {
   if (install.installed) return;
   components.map(component => Vue.component(component.name, component))
-  Vue.directive('watermark', watermark)
+  Vue.use(watermark)
 }
 
 if (typeof window !== 'undefined' && window.Vue) {
   install(window.Vue)
 }
 
+export {
+  install,
+  CheckIn,
+  Countdown,
+  ImgLabel,
+  Magnifier,
+  SlideCheck,
+  watermark
+}
+
 export default {
-  install
+  install,
+  CheckIn,
+  Countdown,
+  ImgLabel,
+  Magnifier,
+  SlideCheck,
+  watermark
 }
