@@ -1,7 +1,6 @@
 <template>
   <div class="wrap" ref="wrap">
     <img
-      @dragover.prevent.stop
       ref="img"
       class="img"
       :src="src"
@@ -150,7 +149,7 @@ export default {
     handleDivBlur(e, index) {
       e.target.innerHTML === "" && this.labels.splice(index, 1);
       e.target.setAttribute("contenteditable", false);
-      this.labels[index].text = e.target.innerHTML;
+      this.labels[index].text = e.target.innerText;
     },
     handleDoubleClick(e) {
       e.target.setAttribute("contenteditable", true);

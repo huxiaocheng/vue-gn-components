@@ -2,8 +2,8 @@ import Vue from "vue";
 import App from "./App.vue";
 import router from "./router";
 import './reset.css';
-// import  watermark  from '../lib'
-// Vue.use(watermark.watermark)
+import VueGnComponents from '../packages'
+Vue.use(VueGnComponents)
 
 Vue.config.productionTip = false;
 
