@@ -13,6 +13,7 @@ Vue.use(VueGnComponents)
 import { CheckIn, watermark } from "vue-gn-components";
 import "vue-gn-components/lib/style/index.css";
 Vue.use(CheckIn).use(watermark)
+```
 
 > ## 一、放大镜 (magnifier)
 
