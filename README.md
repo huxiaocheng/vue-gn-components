@@ -1,3 +1,19 @@
+* 安装 
+```
+npm i vue-gn-components
+```
+* 引入
+```
+整体引入:
+import VueGnComponents from "vue-gn-components";
+import "vue-gn-components/lib/style/index.css";
+Vue.use(VueGnComponents)
+
+按需引入:
+import { CheckIn, watermark } from "vue-gn-components";
+import "vue-gn-components/lib/style/index.css";
+Vue.use(CheckIn).use(watermark)
+
 > ## 一、放大镜 (magnifier)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/11/16ef58a907617248?w=1593&h=459&f=gif&s=4953584)
