@@ -15,7 +15,7 @@ import "vue-gn-components/lib/style/index.css";
 Vue.use(CheckIn).use(watermark)
 ```
 
-> ## 一、放大镜 (magnifier)
+> ## 一、放大镜 (Magnifier)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/11/16ef58a907617248?w=1593&h=459&f=gif&s=4953584)
 * 组件亮点：
@@ -44,7 +44,7 @@ Vue.use(CheckIn).use(watermark)
 
 `direction`: 悬浮框的方向，默认`right`右侧。可选`left`。
 
-> ## 二、签到 (checkIn)
+> ## 二、签到 (CheckIn)
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcc8bf9fbb02?w=721&h=495&f=gif&s=179129)
 * 组件亮点：
 
@@ -69,7 +69,7 @@ export default {
 
 `size`: 签到组件的整体大小，默认`500`。
 
-> ## 三、图片标签 (img-label)
+> ## 三、图片标签 (ImgLabel)
 
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcd3b6af817d?w=627&h=698&f=gif&s=1006472)
@@ -94,7 +94,7 @@ export default {
 
 `theme`: 主题色，默认`#3b8bcc`。
 
-> ## 四、滑动验证(slide-check)
+> ## 四、滑动验证(SlideCheck)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effce3ac12ff25?w=508&h=425&f=gif&s=577548)
 
@@ -141,7 +141,7 @@ export default {
 
 `fail`: 验证没通过的回调。
 
-> ## 五、水印(watermark)
+> ## 五、水印(Watermark)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effced4cca6665?w=737&h=506&f=gif&s=199763)
 
@@ -181,7 +181,7 @@ export default {
 
 `type`: 水印绘制的方式，默认是`repeat`全屏重复绘制，可选`left-top`左上，`right-top`右上，`right-bottom`右小，`left-bottom`左下。
 
-> ## 六、倒计时(countdown)
+> ## 六、倒计时(Countdown)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcfd21657b9e?w=451&h=211&f=gif&s=85192)
 * 组件亮点：
