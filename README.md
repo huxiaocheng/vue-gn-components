@@ -1,3 +1,7 @@
+日常开发使用组件库一般都能满足大部分的需求，不过有些功能组件可能库里并没有，这里开源一些特定项目可能会使用到的组件，希望可以帮助到大家~
+
+## 快速上手
+
 * 安装 
 ```
 npm i vue-gn-components
@@ -14,10 +18,17 @@ import { CheckIn, watermark } from "vue-gn-components";
 import "vue-gn-components/lib/style/index.css";
 Vue.use(CheckIn).use(watermark)
 ```
-
-> ## 一、放大镜 (Magnifier)
+## 组件介绍
+> ### 一、放大镜 (Magnifier)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/11/16ef58a907617248?w=1593&h=459&f=gif&s=4953584)
+* 组件安装:
+
+```
+import { Magnifier } from 'vue-gn-components';
+Vue.use(Magnifier)
+```
+
 * 组件亮点：
 
 无论组件的`dom`位置在页面何方，会准确计算鼠标位置以及自动在右侧悬浮一个查看区域，并且当右侧位置超过边界后，查看区域会自动出现在左边。
@@ -44,16 +55,24 @@ Vue.use(CheckIn).use(watermark)
 
 `direction`: 悬浮框的方向，默认`right`右侧。可选`left`。
 
-> ## 二、签到 (CheckIn)
+> ### 二、签到 (CheckIn)
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcc8bf9fbb02?w=721&h=495&f=gif&s=179129)
+
+* 组件安装:
+
+```
+import { CheckIn } from 'vue-gn-components';
+Vue.use(CheckIn)
+```
+
 * 组件亮点：
 
-实现了功能，如果真要说亮点，会将传入的一维数组的日期集合，按年月格式化为对象，在渲染某个月时，只会渲染对应当月的签到天数。
+实现了功能。会将传入的一维数组的日期集合，按年月格式化为对象，在渲染某个月时，只会渲染对应当月的签到天数，数组拥有海量数据也不会大量渲染。
 
 组件调用：
 ```
 <template>
-  <checkIn :checkIns="checkIns" />
+  <check-in :checkIns="checkIns" />
 </template>
 
 export default {
@@ -67,16 +86,23 @@ export default {
 
 `checkIns`: 传入一个签到日期的一维数组集合，可以是时间戳、`2019-11-11`、`2019.11.11`格式。
 
-`size`: 签到组件的整体大小，默认`500`。
+`size`: 签到组件的整体大小，默认`500`，大小自适应。
 
-> ## 三、图片标签 (ImgLabel)
+> ### 三、图片标签 (ImgLabel)
 
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcd3b6af817d?w=627&h=698&f=gif&s=1006472)
 
+* 组件安装:
+
+```
+import { ImgLabel } from 'vue-gn-components';
+Vue.use(ImgLabel)
+```
+
 * 组件亮点：
 
-实现了功能，右击创建标签，双击编辑标签，可以单个移除，也可以全部清除，保存到本地缓存，导出为图片。
+实现了功能。右击创建标签，双击编辑标签，可以单个移除，也可以全部清除，保存到本地缓存，导出为图片。
 
 * 组件调用：
 
@@ -86,7 +112,7 @@ export default {
 
 * 参数：
 
-`isShowSaveBtn`: 是否显示保存按钮，默认`true`。
+`isShowSaveBtn`: 是否显示保存按钮，默认`true`，会将标签数据保存到本地缓存。
 
 `src`: 需要添加标签图片的`url`。
 
@@ -94,9 +120,16 @@ export default {
 
 `theme`: 主题色，默认`#3b8bcc`。
 
-> ## 四、滑动验证(SlideCheck)
+> ### 四、滑动验证(SlideCheck)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effce3ac12ff25?w=508&h=425&f=gif&s=577548)
+
+* 组件安装:
+
+```
+import { SlideCheck } from 'vue-gn-components';
+Vue.use(SlideCheck)
+```
 
 * 组件亮点：
 
@@ -105,13 +138,13 @@ export default {
 * 组件调用：
 
 ```
-<slider-check 
+<slide-check 
   :width="300" 
   :height="300" 
   :src="src" 
   @success="success" 
   @fail="fail">
-</slider-check>
+</slide-check>
 
 export default {
   data() {
@@ -141,49 +174,17 @@ export default {
 
 `fail`: 验证没通过的回调。
 
-> ## 五、水印(Watermark)
-
-![](https://user-gold-cdn.xitu.io/2019/12/13/16effced4cca6665?w=737&h=506&f=gif&s=199763)
-
-* 指令亮点：
-
-采用自定义指令形式，会将指令作用在`img`上的标签最终替换为`canvas`标签。使用离屏`canvas`进行绘制，一个绘制图像，另一个绘制水印，从而合并为一个`canvas`标签。
-
-* 指令调用：
-
-```
-<template>
-  <div>
-    <img v-watermark="{src: src, text: 'hello world'}"/>
-  </div>
-</template>
-
-export default {
-  data() {
-    return {
-      src: require("./img/min.jpg")
-    };
-  }
-}
-```
-
-* 指令参数：
-
-`src`: 图片的`url`。
-
-`text`: 水印的文字。
-
-`opacity`: 水印的透明度，默认`0.3`。
-
-`rotate`: 旋转角度，默认`20`。
-
-`fontSize`: 水印字体大小，默认`20`。
-
-`type`: 水印绘制的方式，默认是`repeat`全屏重复绘制，可选`left-top`左上，`right-top`右上，`right-bottom`右小，`left-bottom`左下。
-
-> ## 六、倒计时(Countdown)
+> ### 五、倒计时(Countdown)
 
 ![](https://user-gold-cdn.xitu.io/2019/12/13/16effcfd21657b9e?w=451&h=211&f=gif&s=85192)
+
+* 组件安装:
+
+```
+import { Countdown } from 'vue-gn-components';
+Vue.use(Countdown)
+```
+
 * 组件亮点：
 
 两种模式，一种是传入时间戳或`2022-5-12-17-20`或`2022.5.12.17.20`这样大于当前时间的格式。另一种是传入`60`这样的秒数，开始倒数之后刷新页面不会重新计时。没有做任何`css`的美化，只使用作用域插槽派发出对应的值。
@@ -247,3 +248,59 @@ export default {
 `start`：开始。
 
 `pause`：暂停。
+
+> ### 六、水印(watermark)
+
+![](https://user-gold-cdn.xitu.io/2019/12/13/16effced4cca6665?w=737&h=506&f=gif&s=199763)
+
+* 组件安装:
+
+```
+import { watermark } from 'vue-gn-components';
+Vue.use(watermark)
+```
+
+* 指令亮点：
+
+采用自定义指令形式，会将指令作用在`img`上的标签最终替换为`canvas`标签。使用离屏`canvas`进行绘制，一个绘制图像，另一个绘制水印，最终合并为一个`canvas`标签。
+
+* 指令调用：
+
+```
+<template>
+  <div>
+    <img v-watermark="{src: src, text: 'hello world'}"/>
+  </div>
+</template>
+
+export default {
+  data() {
+    return {
+      src: require("./img/min.jpg")
+    };
+  }
+}
+```
+
+* 指令参数：
+
+`src`: 图片的`url`。
+
+`text`: 水印的文字。
+
+`opacity`: 水印的透明度，默认`0.3`。
+
+`rotate`: 旋转角度，默认`20`。
+
+`fontSize`: 水印字体大小，默认`20`。
+
+`type`: 水印绘制的方式，默认是`repeat`全屏重复绘制。只绘制一条水印时，可选`left-top`左上，`right-top`右上，`right-bottom`右小，`left-bottom`左下。
+
+
+## 更多
+
+更多的组件后续会持续添加以及优化，欢迎`pr`各种你使用到功能组件。如果对你有帮助，还请给个`Star`了，这也是我持续完善这个项目，持续的动力。
+
+
+
+
