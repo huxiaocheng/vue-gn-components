@@ -7,6 +7,7 @@ import ImgLabel from '../views/img-label';
 import SlideCheck from '../views/slide-check';
 import Watemark from '../views/watermark';
 import Countdown from '../views/countdown';
+import Drag from '../views/drag';
 
 Vue.use(VueRouter);
 
@@ -42,6 +43,10 @@ const routes = [
   {
     path: '/countdown',
     component: Countdown
+  },
+  {
+    path: '/drag',
+    component: Drag
   }
 ];
 

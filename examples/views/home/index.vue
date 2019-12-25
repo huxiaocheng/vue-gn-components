@@ -6,6 +6,7 @@
     <router-link class="btn" tag="button" to="slide-check">滑动验证</router-link>
     <router-link class="btn" tag="button" to="watemark">添加水印</router-link>
     <router-link class="btn" tag="button" to="countdown">倒计时</router-link>
+    <router-link class="btn" tag="button" to="drag">拖拽</router-link>
   </div>
 </template>
 

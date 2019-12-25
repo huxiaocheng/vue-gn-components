@@ -3,6 +3,8 @@ import Countdown from './Countdown'
 import ImgLabel from './ImgLabel'
 import Magnifier from './Magnifier'
 import SlideCheck from './SlideCheck'
+import DragWrap from './DragWrap'
+import DragItem from './DragItem'
 import watermark from './watermark'
 import './reset.css'
 
@@ -11,7 +13,9 @@ const components = [
   Countdown,
   ImgLabel,
   Magnifier,
-  SlideCheck
+  SlideCheck,
+  DragWrap,
+  DragItem
 ]
 
 const install = Vue => {
@@ -31,6 +35,8 @@ export {
   ImgLabel,
   Magnifier,
   SlideCheck,
+  DragWrap,
+  DragItem,
   watermark
 }
 
@@ -41,5 +47,7 @@ export default {
   ImgLabel,
   Magnifier,
   SlideCheck,
+  DragWrap,
+  DragItem,
   watermark
 }
