@@ -5,7 +5,7 @@
 </template>
 
 <script>
-import { findComponentsUpward } from "../../utils/assist";
+import { find } from "../../utils";
 export default {
   name: "DragWrap",
   created() {
@@ -49,7 +49,7 @@ export default {
       this.toDom = "";
       this.fromDom = "";
       this.isFrom = false;
-      const parents = findComponentsUpward(this, "DragWrap");
+      const parents = find.findComponentsUpward(this, "DragWrap");
       if (parents.length > 0) {
         parents.forEach(parent => {
           parent.toDom = "";

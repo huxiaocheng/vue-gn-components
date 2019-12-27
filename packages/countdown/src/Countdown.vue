@@ -28,6 +28,10 @@ export default {
       this.start();
     }
   },
+  beforeDestroy() {
+    localStorage.removeItem("__SMS_total_time__");
+    clearTimeout(this.timer);
+  },
   data() {
     return {
       date: {
@@ -52,6 +56,7 @@ export default {
       if (this.isSMSMode && this.date.timeLeft > 0) {
         this.mySetInterval(timer => {
           localStorage.setItem("__SMS_total_time__", (this.date.timeLeft -= 1));
+          this.timer = timer;
           if (localStorage.getItem("__SMS_total_time__") <= 0) {
             this.$emit("end");
             clearTimeout(timer);

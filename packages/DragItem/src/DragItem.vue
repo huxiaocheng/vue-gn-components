@@ -3,7 +3,6 @@
     @dragstart.stop="onDragstart"
     @dragenter.stop="onDragenter"
     @dragend.stop="onDragend"
-    @dragleave.stop="onDragleave"
     draggable
     style="cursor: move"
   >
@@ -12,11 +11,7 @@
 </template>
 
 <script>
-import {
-  findComponentsUpward,
-  findBrothersComponents,
-  findComponentsDownward
-} from "../../utils/assist";
+import { find } from "../../utils";
 
 export default {
   name: "DragItem",
@@ -31,18 +26,18 @@ export default {
         this.$parent.$emit("putChild", this.$el);
       }
     });
-    this.brotherIds = findBrothersComponents(this, "DragItem", false).map(
-      brother => brother._uid
-    );
+    this.brotherIds = find
+      .findBrothersComponents(this, "DragItem", false)
+      .map(brother => brother._uid);
   },
   methods: {
     onDragstart(e) {
-      const parents = findComponentsUpward(this, "DragItem");
-      const brothers = findBrothersComponents(this, "DragItem", false);
+      const parents = find.findComponentsUpward(this, "DragItem");
+      const brothers = find.findBrothersComponents(this, "DragItem", false);
       if (parents.length > 0) {
         parents.forEach(parent => {
           parent.targetEl = this._uid;
-          const children = findComponentsDownward(parent, "DragItem");
+          const children = find.findComponentsDownward(parent, "DragItem");
           if (children.length > 0) {
             children.forEach(child => {
               child.targetEl = this._uid;
@@ -66,11 +61,11 @@ export default {
     },
     onDragend(e) {
       e.target.style.opacity = "1";
-      const parents = findComponentsUpward(this, "DragItem");
+      const parents = find.findComponentsUpward(this, "DragItem");
       if (parents.length > 0) {
         parents.forEach(parent => {
           parent.targetEl = "";
-          const children = findComponentsDownward(parent, "DragItem");
+          const children = find.findComponentsDownward(parent, "DragItem");
           if (children.length > 0) {
             children.forEach(child => {
               child.targetEl = "";
