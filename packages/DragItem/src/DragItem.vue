@@ -3,80 +3,67 @@
     @dragstart.stop="onDragstart"
     @dragenter.stop="onDragenter"
     @dragend.stop="onDragend"
-    draggable
-    style="cursor: move"
+    :draggable="!$slots.drag"
+    :style="{cursor: !$slots.drag ? 'move': ''}"
+    class="__drag_item"
   >
+    <slot name="drag" />
     <slot />
   </div>
 </template>
 
 <script>
-import { find } from "../../utils";
+import { Emitter } from "../../utils";
 
 export default {
   name: "DragItem",
-  data() {
-    return {
-      targetEl: ""
-    };
-  },
+  mixins: [Emitter],
   mounted() {
-    this.$nextTick(() => {
-      if (this.$parent && this.$parent.$options.name === "DragWrap") {
-        this.$parent.$emit("putChild", this.$el);
-      }
-    });
-    this.brotherIds = find
-      .findBrothersComponents(this, "DragItem", false)
-      .map(brother => brother._uid);
+    if (this.$slots.drag) {
+      this.setSlotAttr();
+    }
+    this.dispatch("DragWrap", "putChild", this.$el);
   },
   methods: {
-    onDragstart(e) {
-      const parents = find.findComponentsUpward(this, "DragItem");
-      const brothers = find.findBrothersComponents(this, "DragItem", false);
-      if (parents.length > 0) {
-        parents.forEach(parent => {
-          parent.targetEl = this._uid;
-          const children = find.findComponentsDownward(parent, "DragItem");
-          if (children.length > 0) {
-            children.forEach(child => {
-              child.targetEl = this._uid;
-            });
-          }
-        });
-      } else if (brothers.length > 0) {
-        brothers.forEach(brother => {
-          brother.targetEl = this._uid;
-        });
-      }
-      e.target.style.opacity = "0.5";
+    onDragstart() {
+      this.$el.style.opacity = "0.3";
+      this.dispatch("DragWrap", "dragstart", this.$el);
     },
-    onDragenter(e) {
-      if (!this.brotherIds.includes(this.targetEl)) {
-        return;
-      }
-      if (this.$parent && this.$parent.$options.name === "DragWrap") {
-        this.$parent.$emit("dragenter", this.$el, this, e.target);
-      }
+    onDragenter() {
+      this.dispatch("DragWrap", "dragenter", this.$el);
     },
-    onDragend(e) {
-      e.target.style.opacity = "1";
-      const parents = find.findComponentsUpward(this, "DragItem");
-      if (parents.length > 0) {
-        parents.forEach(parent => {
-          parent.targetEl = "";
-          const children = find.findComponentsDownward(parent, "DragItem");
-          if (children.length > 0) {
-            children.forEach(child => {
-              child.targetEl = "";
-            });
-          }
-        });
+    onDragend() {
+      this.$el.style.opacity = "1";
+      this.dispatch("DragWrap", "dragend");
+    },
+    setSlotAttr() {
+      const slotVNode = this.$slots.default.find(
+        vnode => !vnode.data && vnode.text !== " "
+      );
+      const dragDom = slotVNode.elm.previousSibling;
+      if (dragDom.previousSibling !== null) {
+        throw "具名插槽内只能有一个根节点~";
       }
-      if (this.$parent && this.$parent.$options.name === "DragWrap") {
-        this.$parent.$emit("dragend", this.$el);
-      }
+      dragDom.style.cursor = "move";
+      dragDom.draggable = true;
     }
   }
 };
 </script>
+
+<style scoped>
+.__drag_item {
+  animation: shake 0.3s;
+}
+@keyframes shake {
+  0% {
+    transform: translate3d(-10%, 0, 0);
+  }
+  50% {
+    transform: translate3d(10%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+</style>

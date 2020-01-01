@@ -1,56 +1,25 @@
 <template>
-  <div>
-    <drag-wrap class="wrap">
-      <drag-item class="wrap-item" style="background: blue">
-        <drag-wrap style="background: green;">
-          <drag-item>
-            <div class="item">aaa111</div>
-          </drag-item>
-          <drag-item>
-            <div class="item">bbb</div>
-          </drag-item>
-          <drag-item>
-            <div class="item">ccc</div>
-          </drag-item>
-        </drag-wrap>
-      </drag-item>
-      <drag-item class="wrap-item" style="background: red">
-        <drag-wrap style="background: #666;">
-          <drag-item>
-            <div class="item green">111</div>
-          </drag-item>
-          <drag-item>
-            <div class="item green">222</div>
-          </drag-item>
-          <drag-item>
-            <div class="item green">333</div>
-          </drag-item>
-        </drag-wrap>
-      </drag-item>
-      <drag-item class="wrap-item" style="background: green">
-        <drag-wrap style="background: red;">
-          <drag-item>
-            <div class="item blue">+++</div>
-          </drag-item>
-          <drag-item>
-            <div class="item blue">---</div>
-          </drag-item>
-          <drag-item>
-            <div class="item blue">***</div>
-          </drag-item>
-        </drag-wrap>
-      </drag-item>
-    </drag-wrap>
-  </div>
+  <drag-wrap class="wrap" :data="list" @watchData="watchData">
+    <drag-item class="item" v-for="(item, index) in list" :key="index">
+      <div>{{item}}</div>
+      <template #drag>
+        <div>拖拽Dom</div>
+      </template>
+    </drag-item>
+  </drag-wrap>
 </template>
 
 <script>
-import DragWrap from "../../../packages/DragWrap";
-import DragItem from "../../../packages/DragItem";
 export default {
-  components: {
-    DragWrap,
-    DragItem
+  data() {
+    return {
+      list: [111, 222, 333, 444, 555, 666, 777, 888, 999]
+    };
+  },
+  methods: {
+    watchData(newList) {
+      console.log("newList", newList);
+    }
   }
 };
 </script>
@@ -58,6 +27,7 @@ export default {
 <style scoped>
 .wrap {
   display: flex;
+  flex-wrap: wrap;
 }
 .wrap-item {
   display: flex;
@@ -70,7 +40,10 @@ export default {
   height: 60px;
   width: 100px;
   color: #fff;
-  background: red;
+  background: #369;
+}
+.item:nth-child(6) {
+  margin-right: 150px;
 }
 .item.green {
   background: green;
