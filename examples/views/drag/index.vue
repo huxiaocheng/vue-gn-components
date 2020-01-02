@@ -2,6 +2,7 @@
   <drag-wrap class="wrap" :data="list" @watchData="watchData">
     <drag-item class="item" v-for="(item, index) in list" :key="index">
       <div>{{item}}</div>
+      <div>{{item}}</div>
       <template #drag>
         <div>拖拽Dom</div>
       </template>

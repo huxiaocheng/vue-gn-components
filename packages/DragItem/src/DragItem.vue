@@ -3,7 +3,7 @@
     @dragstart.stop="onDragstart"
     @dragenter.stop="onDragenter"
     @dragend.stop="onDragend"
-    :draggable="!$slots.drag"
+    :draggable="!$slots.drag || isDrag"
     :style="{cursor: !$slots.drag ? 'move': ''}"
     class="__drag_item"
   >
@@ -18,6 +18,11 @@ import { Emitter } from "../../utils";
 export default {
   name: "DragItem",
   mixins: [Emitter],
+  data() {
+    return {
+      isDrag: false
+    };
+  },
   mounted() {
     if (this.$slots.drag) {
       this.setSlotAttr();
@@ -44,8 +49,13 @@ export default {
       if (dragDom.previousSibling !== null) {
         throw "具名插槽内只能有一个根节点~";
       }
+      dragDom.addEventListener("mouseenter", () => {
+        this.isDrag = true;
+      });
+      dragDom.addEventListener("mouseleave", () => {
+        this.isDrag = false;
+      });
       dragDom.style.cursor = "move";
-      dragDom.draggable = true;
     }
   }
 };
