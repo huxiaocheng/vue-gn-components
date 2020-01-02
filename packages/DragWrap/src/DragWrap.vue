@@ -42,6 +42,7 @@ export default {
       }
     },
     onDragend() {
+      if (!this.data.length) return;
       const realDomOrder = [...this.$el.children].filter(child =>
         child.classList.contains("__drag_item")
       );
