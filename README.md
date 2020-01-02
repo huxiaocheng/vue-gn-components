@@ -296,6 +296,53 @@ export default {
 
 `type`: 水印绘制的方式，默认是`repeat`全屏重复绘制。只绘制一条水印时，可选`left-top`左上，`right-top`右上，`right-bottom`右小，`left-bottom`左下。
 
+> ### 七、拖拽组件(DragWrap/DragItem)
+
+![](https://user-gold-cdn.xitu.io/2020/1/2/16f6688133489957?w=965&h=319&f=gif&s=197724)
+
+* 组件亮点：
+
+拖拽的具体内容用户完全可以自己编写，也可以自己编写拖拽的控制点。
+
+* 组件调用：
+
+```
+<template>
+  <drag-wrap class="wrap" :data="list" @watchData="watchData">
+    <drag-item class="item" v-for="(item, index) in list" :key="index">
+      <template #drag>
+        <div>拖拽Dom</div>
+      </template>
+      <div>{{item}}</div>
+    </drag-item>
+  </drag-wrap>
+</template>
+
+export default {
+  data() {
+    return {
+      list: [111, 222, 333, 444, 555, 666, 777, 888, 999]
+    };
+  },
+  methods: {
+    watchData(newList) {
+      console.log("newList", newList);
+    }
+  }
+}
+```
+
+* 参数：
+
+`data`：数组格式，`Dom`有对应的渲染数组，当`Dom`位置变了之后，数组也会发生变化，传递给组件内，改变后组件派发出来。
+
+* 事件：
+
+`watchData`：会将改变的数组派发出来，监听这个方法接收。
+
+* 插槽：
+
+`drag`：用户自己定义拖拽的控制点，没有时拖拽`Dom`项任意任意位置都可以。
 
 ## 更多
 
