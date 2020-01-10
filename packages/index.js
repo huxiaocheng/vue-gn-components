@@ -5,6 +5,7 @@ import Magnifier from './Magnifier'
 import SlideCheck from './SlideCheck'
 import DragWrap from './DragWrap'
 import DragItem from './DragItem'
+import FindDiff from './FindDiff'
 import watermark from './watermark'
 import './reset.css'
 
@@ -15,7 +16,8 @@ const components = [
   Magnifier,
   SlideCheck,
   DragWrap,
-  DragItem
+  DragItem,
+  FindDiff
 ]
 
 const install = Vue => {
@@ -37,6 +39,7 @@ export {
   SlideCheck,
   DragWrap,
   DragItem,
+  FindDiff,
   watermark
 }
 
@@ -49,5 +52,6 @@ export default {
   SlideCheck,
   DragWrap,
   DragItem,
+  FindDiff,
   watermark
 }
