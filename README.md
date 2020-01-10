@@ -300,6 +300,13 @@ export default {
 
 ![](https://user-gold-cdn.xitu.io/2020/1/2/16f6688133489957?w=965&h=319&f=gif&s=197724)
 
+* 组件安装:
+
+```
+import { DragWrap, DragItem } from 'vue-gn-components';
+Vue.use(DragWrap).use(DragItem)
+```
+
 * 组件亮点：
 
 拖拽的具体内容用户完全可以自己编写，也可以自己编写拖拽的控制点。
@@ -343,6 +350,29 @@ export default {
 * 插槽：
 
 `drag`：用户自己定义拖拽的控制点，没有时拖拽`Dom`项任意任意位置都可以。
+
+> ### 八、找茬组件(FindDiff)
+
+![](https://user-gold-cdn.xitu.io/2020/1/10/16f8d5ab6686a705?w=1848&h=828&f=gif&s=2265086)
+
+* 组件安装:
+
+```
+import { FindDiff } from 'vue-gn-components';
+Vue.use(FindDiff)
+```
+
+* 组件亮点：
+
+'辅助'完成大家来找茬游戏。
+
+* 组件调用：
+
+```
+<template>
+  <find-diff/>
+</template>
+```
 
 ## 更多
 
