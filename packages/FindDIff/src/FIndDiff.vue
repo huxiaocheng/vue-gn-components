@@ -1,6 +1,6 @@
 <template>
   <div>
-    <input @paste="onUpload" @blur="onblur" readonly ref="input" placeholder="点击这里，ctrl+v复制截图" />
+    <input @paste="onUpload" @blur="onblur" readonly ref="input" placeholder="Ctrl + v复制截图" />
     <span style="color: red;">{{tip}}</span>
   </div>
 </template>
@@ -52,14 +52,6 @@ export default {
           const pixelData = imgData.data;
           for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 200; x++) {
-              function rgbAddUp(pos) {
-                return (
-                  pixelData[4 * pos + 0] +
-                    pixelData[4 * pos + 1] +
-                    pixelData[4 * pos + 2] ===
-                  404
-                );
-              }
               const p = rgbAddUp(y * img.width + x);
               const top = rgbAddUp((y - 1) * img.width + x);
               const right = rgbAddUp(y * img.width + x + 1);
@@ -102,6 +94,14 @@ export default {
                 pixelData[(y * img.width + x + 457) * 4 + 2] = 0;
               }
             }
+          }
+          function rgbAddUp(pos) {
+            return (
+              pixelData[4 * pos + 0] +
+                pixelData[4 * pos + 1] +
+                pixelData[4 * pos + 2] ===
+              404
+            );
           }
           if (!this.imgPos.y && !this.imgPos.x) {
             this.tip = "截图不符合";
