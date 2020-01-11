@@ -1,13 +1,40 @@
 <template>
-  <drag-wrap class="wrap" :data="list" @watchData="watchData">
-    <drag-item class="item" v-for="(item, index) in list" :key="index">
-      <div>{{item}}</div>
-      <div>{{item}}</div>
-      <template #drag>
-        <div>拖拽Dom</div>
-      </template>
-    </drag-item>
-  </drag-wrap>
+  <div>
+    <router-link
+      to="/home"
+      tag="button"
+    >去首页</router-link>
+    <drag-wrap
+      class="wrap"
+      :data="list"
+      @watchData="watchData"
+    >
+      <drag-item
+        class="item"
+        v-for="(item, index) in list"
+        :key="index"
+      >
+        <div>{{item}}</div>
+        <template #drag>
+          <div>拖拽这里</div>
+
+        </template>
+      </drag-item>
+    </drag-wrap>
+    <drag-wrap
+      class="wrap"
+      :data="list"
+      @watchData="watchData"
+    >
+      <drag-item
+        class="item"
+        v-for="(item, index) in list"
+        :key="index"
+      >
+        <div>整个可以拖拽{{item}}</div>
+      </drag-item>
+    </drag-wrap>
+  </div>
 </template>
 
 <script>
@@ -42,9 +69,6 @@ export default {
   width: 100px;
   color: #fff;
   background: #369;
-}
-.item:nth-child(6) {
-  margin-right: 150px;
 }
 .item.green {
   background: green;

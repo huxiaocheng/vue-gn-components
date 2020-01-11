@@ -8,6 +8,7 @@ import SlideCheck from '../views/slide-check';
 import Watemark from '../views/watermark';
 import Countdown from '../views/countdown';
 import Drag from '../views/drag';
+import FindDiff from '../views/findDiff';
 
 Vue.use(VueRouter);
 
@@ -47,6 +48,10 @@ const routes = [
   {
     path: '/drag',
     component: Drag
+  },
+  {
+    path: '/find-diff',
+    component: FindDiff
   }
 ];
 
