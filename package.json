@@ -8,7 +8,7 @@
   "prepublishOnly": "npm run build",
   "description": "一些标准组件库里可能没有的组件",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "serve": "vue-cli-service serve --open",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "lib": "vue-cli-service build --target lib --name vue-gn-components --dest lib packages/index.js"
