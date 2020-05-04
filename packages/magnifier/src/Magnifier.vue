@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { tool } from '../../utils'
+
 export default {
   name: 'Magnifier',
   props: {
@@ -55,6 +57,12 @@ export default {
       maxImgWidth: "",
       maxImgHeight: ""
     };
+  },
+  mounted() {
+    window.addEventListener('scroll', tool.throttle(this.setMaxBoxPos))
+  },
+  beforeDestroy() {
+    window.removeEventListener('scroll', tool.throttle)
   },
   methods: {
     setMaskSize(e) {
@@ -104,6 +112,42 @@ export default {
       let left = e.clientX - leftPosition - this.mask.offsetWidth / 2;
       let top = e.clientY - topPosition - this.mask.offsetHeight / 2;
 
+      this.setMaxBoxPos()
+
+      if (left < paddingLeft) {
+        left = paddingLeft;
+      } else if (
+        left >
+        this.small.offsetWidth - this.mask.offsetWidth + paddingLeft
+      ) {
+        left = this.small.offsetWidth - this.mask.offsetWidth + paddingLeft;
+      }
+
+      if (top < padddingTop) {
+        top = padddingTop;
+      } else if (
+        top >
+        this.small.offsetHeight - this.mask.offsetHeight + padddingTop
+      ) {
+        top = this.small.offsetHeight - this.mask.offsetHeight + padddingTop;
+      }
+
+      this.mask.style.left = left + "px";
+      this.mask.style.top = top + "px";
+      const pX =
+        (left - paddingLeft) / (this.smallWidth - this.mask.offsetWidth);
+      const pY =
+        (top - padddingTop) / (this.smallHeight - this.mask.offsetHeight);
+      this.maxImg.style.left =
+        -pX * (this.maxImg.width - this.maxBox.offsetWidth) + "px";
+      this.maxImg.style.top =
+        -pY * (this.maxImg.height - this.maxBox.offsetHeight) + "px";
+    },
+    setMaxBoxPos() {
+      const leftPosition = this.wrap.getBoundingClientRect().left;
+      const topPosition = this.wrap.getBoundingClientRect().top;
+      const paddingLeft = this.getDomAttr(this.wrap, "padding-left");
+      const padddingTop = this.getDomAttr(this.wrap, "padding-top");
       const maxBoxRightPos =
         leftPosition +
         this.maxBox.clientLeft +
@@ -142,35 +186,6 @@ export default {
         padddingTop +
         this.small.clientTop +
         "px";
-
-      if (left < paddingLeft) {
-        left = paddingLeft;
-      } else if (
-        left >
-        this.small.offsetWidth - this.mask.offsetWidth + paddingLeft
-      ) {
-        left = this.small.offsetWidth - this.mask.offsetWidth + paddingLeft;
-      }
-
-      if (top < padddingTop) {
-        top = padddingTop;
-      } else if (
-        top >
-        this.small.offsetHeight - this.mask.offsetHeight + padddingTop
-      ) {
-        top = this.small.offsetHeight - this.mask.offsetHeight + padddingTop;
-      }
-
-      this.mask.style.left = left + "px";
-      this.mask.style.top = top + "px";
-      const pX =
-        (left - paddingLeft) / (this.smallWidth - this.mask.offsetWidth);
-      const pY =
-        (top - padddingTop) / (this.smallHeight - this.mask.offsetHeight);
-      this.maxImg.style.left =
-        -pX * (this.maxImg.width - this.maxBox.offsetWidth) + "px";
-      this.maxImg.style.top =
-        -pY * (this.maxImg.height - this.maxBox.offsetHeight) + "px";
     }
   }
 };
