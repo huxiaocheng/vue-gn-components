@@ -4,7 +4,7 @@
 将本项目克隆到本地，安装完依赖，执行运行的命令即可查看到具体示例。
 
 ```
-npm clone git@github.com:huxiaocheng/vue-gn-components.git
+git clone git@github.com:huxiaocheng/vue-gn-components.git
 
 npm i
 
