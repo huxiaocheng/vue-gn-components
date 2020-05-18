@@ -50,6 +50,14 @@ export default {
           ctx.drawImage(img, 0, 0, width, height);
           const imgData = ctx.getImageData(0, 0, width, height);
           const pixelData = imgData.data;
+          function rgbAddUp(pos) {
+            return (
+              pixelData[4 * pos + 0] +
+                pixelData[4 * pos + 1] +
+                pixelData[4 * pos + 2] ===
+              404
+            );
+          }
           for (let y = 0; y < 200; y++) {
             for (let x = 0; x < 200; x++) {
               const p = rgbAddUp(y * img.width + x);
@@ -94,14 +102,6 @@ export default {
                 pixelData[(y * img.width + x + 457) * 4 + 2] = 0;
               }
             }
-          }
-          function rgbAddUp(pos) {
-            return (
-              pixelData[4 * pos + 0] +
-                pixelData[4 * pos + 1] +
-                pixelData[4 * pos + 2] ===
-              404
-            );
           }
           if (!this.imgPos.y && !this.imgPos.x) {
             this.tip = "截图不符合";
